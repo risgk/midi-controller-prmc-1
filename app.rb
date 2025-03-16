@@ -44,16 +44,15 @@ current_analog_inputs = [nil, nil, nil, nil, nil, nil, nil, nil]
 
 loop do
   (0..7).each do |i|
-    analog_input = m5_unit_8angle.get_analog_input_8bit(i) +
-                   m5_unit_8angle.get_analog_input_8bit(i) + 2
+    analog_input = m5_unit_8angle.get_analog_input_8bit(i)
 
     if current_analog_inputs[i].nil?
       current_analog_inputs[i] = analog_input
       # p [i, analog_input]
-    elsif (analog_input > current_analog_inputs[i] + 2) ||
-          (analog_input < current_analog_inputs[i] - 2)
+    elsif (analog_input > current_analog_inputs[i] + 1) ||
+          (analog_input < current_analog_inputs[i] - 1)
       current_analog_inputs[i] = analog_input
-      p [i, current_analog_inputs[i], analog_input, [127 - (analog_input / 4), 127].min]
+      p [i, current_analog_inputs[i], analog_input, 127 - (analog_input / 2)]
     end
   end
 end
