@@ -33,9 +33,9 @@ uart.write "\x90\x3C\x7F"
 sleep 1
 uart.write "\x80\x3C\x40"
 
-i2c = I2C.new(unit: :RP2040_I2C1, frequency: 100 * 1000, sda_pin: 6, scl_pin: 7)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100 * 1000, sda_pin: 6, scl_pin: 7)
 
-m5_unit_8angle = M5Unit8Angle.new(i2c)
+m5_unit_8angle = M5Unit8Angle.new(i2c1)
 
 current_analog_inputs = [nil, nil, nil, nil, nil, nil, nil, nil]
 
@@ -44,15 +44,16 @@ current_analog_inputs = [nil, nil, nil, nil, nil, nil, nil, nil]
 
 loop do
   (0..7).each do |i|
-    analog_input = m5_unit_8angle.get_analog_input_8bit(i)
+    analog_input = m5_unit_8angle.get_analog_input_8bit(i) +
+                   m5_unit_8angle.get_analog_input_8bit(i) + 2
 
     if current_analog_inputs[i].nil?
       current_analog_inputs[i] = analog_input
       # p [i, analog_input]
-    elsif (analog_input >= current_analog_inputs[i] + 2) ||
-          (analog_input <= current_analog_inputs[i] - 2)
-      p [i, current_analog_inputs[i], analog_input]
+    elsif (analog_input >= current_analog_inputs[i] + 4) ||
+          (analog_input <= current_analog_inputs[i] - 4)
       current_analog_inputs[i] = analog_input
+      p [i, current_analog_inputs[i], analog_input, [127 - (analog_input / 4), 127].min]
     end
   end
 end
