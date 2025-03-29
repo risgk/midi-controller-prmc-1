@@ -10,6 +10,7 @@ Hardware
 
 - Raspberry Pi Pico <https://www.raspberrypi.com/products/raspberry-pi-pico/>
 - Grove Shield for Pi Pico <https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/>
+- M5Stack Unit ByteButton <https://docs.m5stack.com/en/unit/Unit%20ByteButton>
 - M5Stack Unit 8Angle <https://docs.m5stack.com/en/unit/8angle>
 - M5Stack Unit MIDI <https://docs.m5stack.com/en/unit/Unit-MIDI>
 
@@ -28,6 +29,25 @@ Usage
 
 require 'uart'
 require 'i2c'
+
+
+class M5UnitByteButton
+  # refs https://github.com/m5stack/M5Unit-ByteButton
+
+  UNIT_BYTE_BUTTON_I2C_ADDR = 0x47
+  UNIT_BYTE_STATUS_REG      = 0x00
+
+  def initialize(i2c)
+    @i2c = i2c
+  end
+
+  def get_switch_status
+    @i2c.write(UNIT_BYTE_BUTTON_I2C_ADDR, UNIT_BYTE_STATUS_REG)
+    @i2c.read(UNIT_BYTE_BUTTON_I2C_ADDR, 1).bytes[0]
+  rescue StandardError
+    retry  # workaround for Timeout error in I2C
+  end
+end
 
 
 class M5Unit8Angle
@@ -84,9 +104,10 @@ sleep 1
 uart.write "\x80\x3C\x40"
 
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 10 * 1000, sda_pin: 6, scl_pin: 7)
+m5_unit_byte_button = M5UnitByteButton.new(i2c1)
+m5_unit_8angle      = M5Unit8Angle.new(i2c1)
 
-m5_unit_8angle = M5Unit8Angle.new(i2c1)
-
+current_switch_status = nil
 current_analog_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_digital_input = nil
 
@@ -103,6 +124,13 @@ end
 # loop
 
 loop do
+  switch_status = 0xFF & ~m5_unit_byte_button.get_switch_status()
+
+  if current_switch_status != switch_status
+    current_switch_status = switch_status
+    p [-1, current_switch_status]
+  end
+
   (0..7).each do |ch|
     analog_input = m5_unit_8angle.get_analog_input_8bit(ch)
 
