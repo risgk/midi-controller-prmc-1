@@ -1,6 +1,30 @@
-# 
-# MIDI Controller PRMC-1
-# 
+=begin
+MIDI Controller PRMC-1 (type-0) v0.0.0
+======================================
+
+2025-01-30 ISGK Instruments
+
+
+Hardware
+--------
+
+- Raspberry Pi Pico <https://www.raspberrypi.com/products/raspberry-pi-pico/>
+- Grove Shield for Pi Pico <https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/>
+- M5Stack Unit 8Angle <https://docs.m5stack.com/en/unit/8angle>
+- M5Stack Unit MIDI <https://docs.m5stack.com/en/unit/Unit-MIDI>
+
+
+Software
+--------
+
+- R2P2 0.3.0 <https://github.com/picoruby/R2P2/releases/tag/0.3.0>
+
+
+Usage
+-----
+
+- TODO
+=end
 
 require 'uart'
 require 'i2c'
@@ -33,7 +57,7 @@ uart.write "\x90\x3C\x7F"
 sleep 1
 uart.write "\x80\x3C\x40"
 
-i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100 * 1000, sda_pin: 6, scl_pin: 7)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 25 * 1000, sda_pin: 6, scl_pin: 7)
 
 m5_unit_8angle = M5Unit8Angle.new(i2c1)
 
