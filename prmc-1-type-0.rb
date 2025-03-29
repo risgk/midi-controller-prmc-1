@@ -38,7 +38,7 @@ class M5UnitAngle8
   ANGLE8_DIGITAL_INPUT_REG   = 0x20
   ANGLE8_RGB_24B_REG         = 0x30
 
-  def initialize(i2c)
+  def begin(i2c)
     @i2c = i2c
   end
 
@@ -69,10 +69,34 @@ class M5UnitAngle8
   end
 end
 
+class UARTMIDI
+  # refs https://github.com/FortySevenEffects/arduino_midi_library
+
+  def begin(uart)
+    @uart = uart
+  end
+
+  def send_note_on(note_number, velocity, channel)
+    @uart.write((0x90 + channel - 1).chr + note_number.chr + velocity.chr)
+  end
+
+  def send_note_off(note_number, velocity, channel)
+    @uart.write((0x80 + channel - 1).chr + note_number.chr + velocity.chr)
+  end
+
+  def send_control_change(control_number, control_value, channel)
+    @uart.write((0xB0 + channel - 1).chr + control_number.chr + control_value.chr)
+  end
+end
 
 class PRMC1Core
   def initialize
     @led_byte = 0xFF
+  end
+
+  def begin(midi, midi_channel)
+    @midi = midi
+    @midi_channel = midi_channel
   end
 
   def on_parameter_changed(key, value)
@@ -88,15 +112,22 @@ end
 # setup
 
 LED_ON_VALUE = 1
+MIDI_CHANNEL = 1
 
-uart = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
-uart.write "\x90\x3C\x7F"
-sleep 1
-uart.write "\x80\x3C\x40"
+uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 25 * 1000, sda_pin: 6, scl_pin: 7)
-angle8 = M5UnitAngle8.new(i2c1)
+angle8 = M5UnitAngle8.new
+angle8.begin(i2c1)
+
+midi = UARTMIDI.new
+midi.begin(uart1)
+midi.send_note_on(60, 100, MIDI_CHANNEL)
+sleep 1
+midi.send_note_off(60, 64, MIDI_CHANNEL)
+
 prmc_1_core = PRMC1Core.new
+prmc_1_core.begin(midi, MIDI_CHANNEL)
 
 current_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_digital_input      = nil
