@@ -64,21 +64,31 @@ class M5UnitAngle8
 end
 
 
+class PRMC1Core
+  def initialize
+  end
+
+  def on_parameter_changed(key, value)
+  end
+end
+
+
 # setup
 
-ANGLE8_LED_ON_VALUE = 64
+ANGLE8_LED_ON_VALUE = 1
 
 uart = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 uart.write "\x90\x3C\x7F"
 sleep 1
 uart.write "\x80\x3C\x40"
 
-i2c1        = I2C.new(unit: :RP2040_I2C1, frequency: 25 * 1000, sda_pin: 6, scl_pin: 7)
-angle8      = M5UnitAngle8.new(i2c1)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 50 * 1000, sda_pin: 6, scl_pin: 7)
+angle8 = M5UnitAngle8.new(i2c1)
+prmc_1_core = PRMC1Core.new
 
 current_angle8_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_angle8_digital_input      = nil
-current_angle8_led_g_array        = [1, 1, 1, 1, 1, 1, 1, 1]
+current_angle8_led_green_byte     = 0xFF
 
 
 # loop
@@ -104,6 +114,6 @@ loop do
   end
 
   (0..7).each do |ch|
-    angle8.set_led_color_green(ch, current_angle8_led_g_array[ch] * ANGLE8_LED_ON_VALUE)
+    angle8.set_led_color_green(ch, ((current_angle8_led_green_byte >> ch) & 0x01) * ANGLE8_LED_ON_VALUE)
   end
 end
