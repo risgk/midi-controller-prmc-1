@@ -98,55 +98,57 @@ end
 
 # setup
 
+ANGLE8_LED_ON_VALUE = 64
+
 uart = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 uart.write "\x90\x3C\x7F"
 sleep 1
 uart.write "\x80\x3C\x40"
 
-i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 10 * 1000, sda_pin: 6, scl_pin: 7)
-m5_unit_byte_button = M5UnitByteButton.new(i2c1)
-m5_unit_8angle      = M5Unit8Angle.new(i2c1)
+i2c1        = I2C.new(unit: :RP2040_I2C1, frequency: 10 * 1000, sda_pin: 6, scl_pin: 7)
+byte_button = M5UnitByteButton.new(i2c1)
+angle8      = M5Unit8Angle.new(i2c1)
 
-current_switch_status = nil
-current_analog_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
-current_digital_input = nil
-
-LED_OFF_VALUE = 0
-LED_ON_VALUE = 64
-
-(0..7).each do |ch|
-  m5_unit_8angle.set_led_color_red(ch, LED_ON_VALUE)
-  m5_unit_8angle.set_led_color_green(ch, LED_ON_VALUE)
-  m5_unit_8angle.set_led_color_blue(ch, LED_ON_VALUE)
-end
+current_byte_button_switch_status = nil
+current_angle8_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
+current_angle8_digital_input      = nil
+current_angle8_led_r_array        = [0, 0, 0, 0, 0, 0, 0, 0]
+current_angle8_led_g_array        = [1, 1, 1, 1, 1, 1, 1, 1]
+current_angle8_led_b_array        = [0, 0, 0, 0, 0, 0, 0, 0]
 
 
 # loop
 
 loop do
-  switch_status = 0xFF & ~m5_unit_byte_button.get_switch_status()
+  byte_button_switch_status = 0xFF & ~byte_button.get_switch_status()
 
-  if current_switch_status != switch_status
-    current_switch_status = switch_status
-    p [-1, current_switch_status]
+  if current_byte_button_switch_status != byte_button_switch_status
+    current_byte_button_switch_status = byte_button_switch_status
+    p [-1, current_byte_button_switch_status]
   end
 
   (0..7).each do |ch|
-    analog_input = m5_unit_8angle.get_analog_input_8bit(ch)
+    angle8_analog_input_8bit = angle8.get_analog_input_8bit(ch)
 
-    if current_analog_inputs[ch].nil?
-      current_analog_inputs[ch] = analog_input
-    elsif (analog_input > current_analog_inputs[ch] + 1) ||
-          (analog_input < current_analog_inputs[ch] - 1)
-      current_analog_inputs[ch] = analog_input
-      p [ch, current_analog_inputs[ch], analog_input, 127 - (analog_input / 2)]
+    if current_angle8_analog_input_array[ch].nil?
+      current_angle8_analog_input_array[ch] = angle8_analog_input_8bit
+    elsif (angle8_analog_input_8bit > current_angle8_analog_input_array[ch] + 1) ||
+          (angle8_analog_input_8bit < current_angle8_analog_input_array[ch] - 1)
+      current_angle8_analog_input_array[ch] = angle8_analog_input_8bit
+      p [ch, current_angle8_analog_input_array[ch], angle8_analog_input_8bit, 127 - (angle8_analog_input_8bit / 2)]
     end
   end
 
-  digital_input = m5_unit_8angle.get_digital_input()
+  angle8_digital_input = angle8.get_digital_input()
 
-  if current_digital_input != digital_input
-    current_digital_input = digital_input
-    p [8, digital_input]
+  if current_angle8_digital_input != angle8_digital_input
+    current_angle8_digital_input = angle8_digital_input
+    p [8, angle8_digital_input]
+  end
+
+  (0..7).each do |ch|
+    angle8.set_led_color_red(  ch, current_angle8_led_r_array[ch] * ANGLE8_LED_ON_VALUE)
+    angle8.set_led_color_green(ch, current_angle8_led_g_array[ch] * ANGLE8_LED_ON_VALUE)
+    angle8.set_led_color_blue( ch, current_angle8_led_b_array[ch] * ANGLE8_LED_ON_VALUE)
   end
 end
