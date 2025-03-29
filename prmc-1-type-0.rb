@@ -50,7 +50,7 @@ class M5UnitByteButton
 end
 
 
-class M5Unit8Angle
+class M5UnitAngle8
   # refs https://github.com/m5stack/M5Unit-8Angle
 
   ANGLE8_I2C_ADDR            = 0x43
@@ -62,20 +62,8 @@ class M5Unit8Angle
     @i2c = i2c
   end
 
-  def set_led_color_red(ch, value)
-    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
-  rescue StandardError
-    retry  # workaround for Timeout error in I2C
-  end
-
   def set_led_color_green(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
-  rescue StandardError
-    retry  # workaround for Timeout error in I2C
-  end
-
-  def set_led_color_blue(ch, value)
-    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
   rescue StandardError
     retry  # workaround for Timeout error in I2C
   end
@@ -105,16 +93,14 @@ uart.write "\x90\x3C\x7F"
 sleep 1
 uart.write "\x80\x3C\x40"
 
-i2c1        = I2C.new(unit: :RP2040_I2C1, frequency: 10 * 1000, sda_pin: 6, scl_pin: 7)
+i2c1        = I2C.new(unit: :RP2040_I2C1, frequency: 50 * 1000, sda_pin: 6, scl_pin: 7)
 byte_button = M5UnitByteButton.new(i2c1)
-angle8      = M5Unit8Angle.new(i2c1)
+angle8      = M5UnitAngle8.new(i2c1)
 
 current_byte_button_switch_status = nil
 current_angle8_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_angle8_digital_input      = nil
-current_angle8_led_r_array        = [0, 0, 0, 0, 0, 0, 0, 0]
 current_angle8_led_g_array        = [1, 1, 1, 1, 1, 1, 1, 1]
-current_angle8_led_b_array        = [0, 0, 0, 0, 0, 0, 0, 0]
 
 
 # loop
@@ -147,8 +133,6 @@ loop do
   end
 
   (0..7).each do |ch|
-    angle8.set_led_color_red(  ch, current_angle8_led_r_array[ch] * ANGLE8_LED_ON_VALUE)
     angle8.set_led_color_green(ch, current_angle8_led_g_array[ch] * ANGLE8_LED_ON_VALUE)
-    angle8.set_led_color_blue( ch, current_angle8_led_b_array[ch] * ANGLE8_LED_ON_VALUE)
   end
 end
