@@ -124,6 +124,7 @@ class PRMC1Core
     @usec = Time.now.usec
     @count = 0
     @step = 31
+    @sub_step = 7
     @playing_note = -1
 
     @blue_leds_byte = 0x00
@@ -182,32 +183,37 @@ class PRMC1Core
     p [key, value]
 
     case key
-    when 0
-      @root_array_candidate[0] = (value + 8) / 16
-      set_green_leds_for_root(@root_array_candidate[0])
-    when 1
-      @root_array_candidate[1] = (value + 8) / 16
-      set_green_leds_for_root(@root_array_candidate[1])
-    when 2
-      @root_array_candidate[2] = (value + 8) / 16
-      set_green_leds_for_root(@root_array_candidate[2])
-    when 3
-      @root_array_candidate[3] = (value + 8) / 16
-      set_green_leds_for_root(@root_array_candidate[3])
+    when 0..3
+      @root_array_candidate[key] = ((value * 14 * 2) + 127) / 254 + 1
+      set_green_leds_for_root(@root_array_candidate[key])
     when 4
-      if value < 64
-        @pattern_array_candidate = [0, 2, 4, 0, 2, 4, 0, 2]
-      else
+      if value < 32
         @pattern_array_candidate = [0, 2, 4, 6, 4, 2, 0, 2]
+        @green_leds_byte = 0x10
+      elsif value < 96
+        @pattern_array_candidate = [0, 2, 4, 0, 2, 4, 0, 2]
+        @green_leds_byte = 0x20
+      else
+        @pattern_array_candidate = [0, 3, 4, 0, 3, 4, 0, 3]
+        @green_leds_byte = 0x40
       end
     when 5
-    when 6
+      @midi.send_control_change(0x4A, value, @midi_channel)
       @midi.send_control_change(0x63, 0x01, @midi_channel)
       @midi.send_control_change(0x62, 0x20, @midi_channel)
       @midi.send_control_change(0x06, value, @midi_channel)
+      @green_leds_byte = 0x00
+    when 6
+      @midi.send_control_change(0x47, value, @midi_channel)
+      @midi.send_control_change(0x63, 0x01, @midi_channel)
+      @midi.send_control_change(0x62, 0x21, @midi_channel)
+      @midi.send_control_change(0x06, value, @midi_channel)
+      @green_leds_byte = 0x00
     when 7
       @bpm = value + 56
+      @green_leds_byte = 0x00
     when 8
+      # todo
     end
   end
 
@@ -228,19 +234,19 @@ class PRMC1Core
     case root
     when 0
       @green_leds_byte = 0x00
-    when 1
+    when 1, 8
       @green_leds_byte = 0x10
-    when 2
+    when 2, 9
       @green_leds_byte = 0x30
-    when 3
+    when 3, 10
       @green_leds_byte = 0x20
-    when 4
+    when 4, 11
       @green_leds_byte = 0x60
-    when 5
+    when 5, 12
       @green_leds_byte = 0x40
-    when 6
+    when 6, 13
       @green_leds_byte = 0xC0
-    when 7
+    when 7, 14
       @green_leds_byte = 0x80
     end
   end
