@@ -93,6 +93,18 @@ class MIDI
   def send_control_change(control_number, control_value, channel)
     @uart.write((0xB0 + (channel - 1)).chr + control_number.chr + control_value.chr)
   end
+
+  def send_clock
+    @uart.write(0xF8.chr)
+  end
+
+  def send_start
+    @uart.write(0xFA.chr)
+  end
+
+  def send_stop
+    @uart.write(0xFC.chr)
+  end
 end
 
 
@@ -105,6 +117,9 @@ class PRMC1Core
     @count = 0
     @step = 31
     @playing_note = -1
+
+    @blue_leds_byte = 0x00
+    @green_leds_byte = 0x00
   end
 
   def begin(midi, midi_channel)
@@ -126,6 +141,8 @@ class PRMC1Core
   def clock
     @step += 1
     @step = 0 if @step == 32
+
+    set_blue_leds_for_step(@step)
 
     p @step
 
@@ -172,12 +189,16 @@ class PRMC1Core
     case key
     when 0
       @root_array[0] = (value + 8) / 16
+      set_green_leds_for_root(@root_array[0])
     when 1
       @root_array[1] = (value + 8) / 16
+      set_green_leds_for_root(@root_array[1])
     when 2
       @root_array[2] = (value + 8) / 16
+      set_green_leds_for_root(@root_array[2])
     when 3
       @root_array[3] = (value + 8) / 16
+      set_green_leds_for_root(@root_array[3])
     when 4
     when 5
     when 6
@@ -188,6 +209,48 @@ class PRMC1Core
       @bpm = value + 56
     when 8
     end
+  end
+
+  def set_blue_leds_for_step(step)
+    case step / 8
+    when 0
+      @blue_leds_byte = 0x01
+    when 1
+      @blue_leds_byte = 0x02
+    when 2
+      @blue_leds_byte = 0x04
+    when 3
+      @blue_leds_byte = 0x08
+    end
+  end
+
+  def set_green_leds_for_root(root)
+    case root
+    when 0
+      @green_leds_byte = 0x00
+    when 1
+      @green_leds_byte = 0x10
+    when 2
+      @green_leds_byte = 0x30
+    when 3
+      @green_leds_byte = 0x20
+    when 4
+      @green_leds_byte = 0x60
+    when 5
+      @green_leds_byte = 0x40
+    when 6
+      @green_leds_byte = 0xC0
+    when 7
+      @green_leds_byte = 0x80
+    end
+  end
+
+  def blue_leds_byte
+    @blue_leds_byte
+  end
+
+  def green_leds_byte
+    @green_leds_byte
   end
 end
 
@@ -247,5 +310,17 @@ loop do
       current_digital_input = digital_input
       prmc_1_core.on_parameter_changed(8, digital_input)
     end
+  end
+
+  (0..3).each do |ch|
+    prmc_1_core.process()
+
+    angle8.set_led_color_blue(ch, ((prmc_1_core.blue_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
+  end
+
+  (4..7).each do |ch|
+    prmc_1_core.process()
+
+    angle8.set_led_color_green(ch, ((prmc_1_core.green_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
   end
 end
