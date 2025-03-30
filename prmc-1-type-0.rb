@@ -26,7 +26,7 @@ Usage
 - TODO
 =end
 
-
+# options
 MIDI_CHANNEL = 1
 FOR_SAM2695 = true
 LED_ON_VALUE = 1
