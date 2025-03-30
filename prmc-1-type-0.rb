@@ -4,9 +4,8 @@ MIDI Controller PRMC-1 (type-0) v0.0.0
 
 2025-01-30 ISGK Instruments
 
-
-Hardware
---------
+Required Hardware
+-----------------
 
 - Raspberry Pi Pico <https://www.raspberrypi.com/products/raspberry-pi-pico/>
 - Grove Shield for Pi Pico <https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/>
@@ -14,8 +13,8 @@ Hardware
 - M5Stack Unit MIDI <https://docs.m5stack.com/en/unit/Unit-MIDI>
 
 
-Software
---------
+Required Software
+-----------------
 
 - R2P2 0.3.0 <https://github.com/picoruby/R2P2/releases/tag/0.3.0>
 
@@ -23,7 +22,30 @@ Software
 Usage
 -----
 
-- TODO
+- CH1 Knob: Root of Bar 1 Chord
+- CH2 Knob: Root of Bar 2 Chord
+- CH3 Knob: Root of Bar 3 Chord
+- CH4 Knob: Root of Bar 4 Chord
+- CH5 Knob: Arpeggio Type
+- CH6 Knob: Filter Cutoff (Brightness)
+- CH7 Knob: Filter Resonance (Harmonic Content)
+- CH8 Knob: Tempo 60-240
+- SW Switch: 1 to Start Sequencer, 0 to Stop Sequencer
+
+
+License
+-------
+
+![CC0](http://i.creativecommons.org/p/zero/1.0/88x31.png)
+
+**MIDI Controller PRMC-1 (type-0) by ISGK Instruments (Ryo Ishigaki)**
+
+To the extent possible under law, ISGK Instruments (Ryo Ishigaki)
+has waived all copyright and related or neighboring rights
+to MIDI Controller PRMC-1 (type-0).
+
+You should have received a copy of the CC0 legalcode along with this
+work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 =end
 
 # options
