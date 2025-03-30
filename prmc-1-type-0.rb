@@ -69,7 +69,8 @@ class M5UnitAngle8
   end
 end
 
-class UARTMIDI
+
+class MIDI
   # refs https://github.com/FortySevenEffects/arduino_midi_library
 
   def begin(uart)
@@ -77,17 +78,18 @@ class UARTMIDI
   end
 
   def send_note_on(note_number, velocity, channel)
-    @uart.write((0x90 + channel - 1).chr + note_number.chr + velocity.chr)
+    @uart.write((0x90 + (channel - 1)).chr + note_number.chr + velocity.chr)
   end
 
   def send_note_off(note_number, velocity, channel)
-    @uart.write((0x80 + channel - 1).chr + note_number.chr + velocity.chr)
+    @uart.write((0x80 + (channel - 1)).chr + note_number.chr + velocity.chr)
   end
 
   def send_control_change(control_number, control_value, channel)
-    @uart.write((0xB0 + channel - 1).chr + control_number.chr + control_value.chr)
+    @uart.write((0xB0 + (channel - 1)).chr + control_number.chr + control_value.chr)
   end
 end
+
 
 class PRMC1Core
   def initialize
@@ -101,6 +103,19 @@ class PRMC1Core
 
   def on_parameter_changed(key, value)
     p [key, value]
+
+    case key
+    when 0
+      # @midi.send_note_on(value, 100, @midi_channel)
+    when 1
+    when 2
+    when 3
+    when 4
+    when 5
+    when 6
+    when 7
+    when 8
+    end
   end
 
   def get_led_byte
@@ -120,7 +135,7 @@ i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 25 * 1000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new
 angle8.begin(i2c1)
 
-midi = UARTMIDI.new
+midi = MIDI.new
 midi.begin(uart1)
 midi.send_note_on(60, 100, MIDI_CHANNEL)
 sleep 1
@@ -135,7 +150,25 @@ current_digital_input      = nil
 
 # loop
 
+cnt = 0
+current_time = 0
+
 loop do
+=begin
+  cnt += 1
+
+  msec = Time.now.usec / 1000
+
+  if current_time != msec
+    p [(msec - current_time + 1000) % 1000]
+  end
+
+  current_time = msec
+
+  p msec
+=end
+
+
   (0..7).each do |ch|
     analog_input = angle8.get_analog_input_8bit(ch)
 
@@ -144,7 +177,7 @@ loop do
     elsif (analog_input > current_analog_input_array[ch] + 1) ||
           (analog_input < current_analog_input_array[ch] - 1)
       current_analog_input_array[ch] = analog_input
-      prmc_1_core.on_parameter_changed(ch, 127 - (analog_input / 2))
+      prmc_1_core.on_parameter_changed(ch, 127 - (current_analog_input_array[ch] / 2))
     end
   end
 
@@ -156,12 +189,4 @@ loop do
   end
 
   led_byte_output = prmc_1_core.get_led_byte()
-
-  (0..3).each do |ch|
-    angle8.set_led_color_blue(ch, ((led_byte_output >> ch) & 0x01) * LED_ON_VALUE)
-  end
-
-  (4..7).each do |ch|
-    angle8.set_led_color_green(ch, ((led_byte_output >> ch) & 0x01) * LED_ON_VALUE)
-  end
 end
