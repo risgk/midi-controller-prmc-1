@@ -121,10 +121,10 @@ class PRMC1Core
                              72, 74, 76, 77, 79, 81, 83]
     @bpm = 120
 
+    @playing = false
     @usec = Time.now.usec
-    @count = 0
     @step = 31
-    @sub_step = 7
+    @sub_step = 11
     @playing_note = -1
 
     @blue_leds_byte = 0x00
@@ -139,43 +139,13 @@ class PRMC1Core
   def process
     usec = Time.now.usec
 
-    if ((usec - @usec + 1000000) % 1000000) >= 200000
+    if @playing == false
+      return
+    end
+
+    if ((usec - @usec + 1000000) % 1000000) >= (2500000 / @bpm)
       @usec = usec
-      @count += 1
-
       clock
-    end
-  end
-
-  def clock
-    @step += 1
-    @step = 0 if @step == 32
-
-    if @step % 8 == 0
-      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
-    end
-
-    set_blue_leds_for_step(@step)
-
-    p @step
-
-    root = @root_array[@step / 8]
-    new_note_index = 0
-
-    if root != 0
-      new_note_index = root + @pattern_array[@step % 8]
-    end
-
-    if @playing_note != -1
-      @midi.send_note_off(@playing_note, 64, @midi_channel)
-    end
-
-    if new_note_index != 0
-      @playing_note = @scale_note_array[new_note_index]
-      @midi.send_note_on(@playing_note, 100, @midi_channel)
-    else
-      @playing_note = -1
     end
   end
 
@@ -213,7 +183,20 @@ class PRMC1Core
       @bpm = value + 56
       @green_leds_byte = 0x00
     when 8
-      # todo
+      if value > 0
+        @step = 31
+        @sub_step = 11
+        @playing = true
+        @midi.send_start()
+      else
+        if @playing_note != -1
+          @midi.send_note_off(@playing_note, 64, @midi_channel)
+        end
+
+        @midi.send_stop()
+        @playing = false
+        @blue_leds_byte = 0x00
+      end
     end
   end
 
@@ -257,6 +240,43 @@ class PRMC1Core
 
   def green_leds_byte
     @green_leds_byte
+  end
+
+  def clock
+    @sub_step += 1
+    @midi.send_clock()
+
+    return if @sub_step != 12
+
+    @sub_step = 0
+    @step += 1
+    @step = 0 if @step == 32
+    set_blue_leds_for_step(@step)
+
+    if @step % 8 == 0
+      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
+      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
+    end
+
+    p @step
+
+    root = @root_array[@step / 8]
+    new_note_index = 0
+
+    if root != 0
+      new_note_index = root + @pattern_array[@step % 8]
+    end
+
+    if @playing_note != -1
+      @midi.send_note_off(@playing_note, 64, @midi_channel)
+    end
+
+    if new_note_index != 0
+      @playing_note = @scale_note_array[new_note_index]
+      @midi.send_note_on(@playing_note, 100, @midi_channel)
+    else
+      @playing_note = -1
+    end
   end
 end
 
