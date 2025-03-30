@@ -52,6 +52,7 @@ work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
 MIDI_CHANNEL = 1
 FOR_SAM2695 = true
 LED_ON_VALUE = 1
+TRANSPOSE = 0
 
 
 require 'uart'
@@ -68,6 +69,12 @@ class M5UnitAngle8
 
   def begin(i2c)
     @i2c = i2c
+  end
+
+  def set_led_color_red(ch, value)
+    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
+  rescue StandardError
+    retry  # workaround for Timeout error in I2C
   end
 
   def set_led_color_green(ch, value)
@@ -94,8 +101,13 @@ class M5UnitAngle8
     retry  # workaround for Timeout error in I2C
   end
 
-  def get_digital_input
+  def prepare_to_get_digital_input
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_DIGITAL_INPUT_REG)
+  rescue StandardError
+    retry  # workaround for Timeout error in I2C
+  end
+
+  def get_digital_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
   rescue StandardError
     retry  # workaround for Timeout error in I2C
@@ -182,8 +194,6 @@ class PRMC1Core
   end
 
   def on_parameter_changed(key, value)
-    # p [key, value]
-
     case key
     when 0..3
       @root_array_candidate[key] = ((value * 14 * 2) + 127) / 254 + 1
@@ -239,35 +249,24 @@ class PRMC1Core
   end
 
   def set_blue_leds_for_step(step)
-    case step / 8
-    when 0
-      @blue_leds_byte = 0x01
-    when 1
-      @blue_leds_byte = 0x02
-    when 2
-      @blue_leds_byte = 0x04
-    when 3
-      @blue_leds_byte = 0x08
-    end
+    @blue_leds_byte = 0x01 << (step / 8)
   end
 
   def set_green_leds_for_root(root)
-    case root
-    when 0
-      @green_leds_byte = 0x00
-    when 1, 8
+    case ((root - 1) % 7) + 1
+    when 1
       @green_leds_byte = 0x10
-    when 2, 9
+    when 2
       @green_leds_byte = 0x30
-    when 3, 10
+    when 3
       @green_leds_byte = 0x20
-    when 4, 11
+    when 4
       @green_leds_byte = 0x60
-    when 5, 12
+    when 5
       @green_leds_byte = 0x40
-    when 6, 13
+    when 6
       @green_leds_byte = 0xC0
-    when 7, 14
+    when 7
       @green_leds_byte = 0x80
     end
   end
@@ -296,8 +295,6 @@ class PRMC1Core
       @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
     end
 
-    # p @step
-
     root = @root_array[@step / 8]
     new_note_index = 0
 
@@ -310,7 +307,7 @@ class PRMC1Core
     end
 
     if new_note_index != 0
-      @playing_note = @scale_note_array[new_note_index]
+      @playing_note = @scale_note_array[new_note_index] + TRANSPOSE
       @midi.send_note_on(@playing_note, 100, @midi_channel)
     else
       @playing_note = -1
@@ -321,26 +318,24 @@ end
 
 # setup
 
-
-
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
-
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20 * 1000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new
 angle8.begin(i2c1)
-
 midi = MIDI.new
 midi.begin(uart1)
+prmc_1_core = PRMC1Core.new
+prmc_1_core.begin(midi, MIDI_CHANNEL)
 
 if FOR_SAM2695
   midi.send_program_change(0x26, MIDI_CHANNEL)
   midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
+  midi.send_control_change(0x62, 0x64, MIDI_CHANNEL)
+  midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
+  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
   midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
-  midi.send_control_change(0x06, 0x7F, MIDI_CHANNEL)
+  midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
 end
-
-prmc_1_core = PRMC1Core.new
-prmc_1_core.begin(midi, MIDI_CHANNEL)
 
 current_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_digital_input      = nil
@@ -367,6 +362,10 @@ loop do
   end
 
   begin
+    prmc_1_core.process()
+
+    angle8.prepare_to_get_digital_input()
+
     prmc_1_core.process()
 
     digital_input = angle8.get_digital_input()
