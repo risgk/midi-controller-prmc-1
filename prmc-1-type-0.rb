@@ -110,7 +110,15 @@ end
 
 class PRMC1Core
   def initialize
-    @root_array = [0, 0, 0, 0]
+    @root_array_candidate = [0, 0, 0, 0]
+    @root_array = []
+    @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
+    @pattern_array_candidate = [0, 2, 4, 6, 4, 2, 0, 2]
+    @pattern_array = []
+    @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
+    @scale_note_array = [-1, 48, 50, 52, 53, 55, 57, 59,
+                             60, 62, 64, 65, 67, 69, 71,
+                             72, 74, 76, 77, 79, 81, 83]
     @bpm = 120
 
     @usec = Time.now.usec
@@ -142,6 +150,11 @@ class PRMC1Core
     @step += 1
     @step = 0 if @step == 32
 
+    if @step % 8 == 0
+      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
+      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
+    end
+
     set_blue_leds_for_step(@step)
 
     p @step
@@ -150,24 +163,7 @@ class PRMC1Core
     new_note_index = 0
 
     if root != 0
-      case @step % 8
-      when 0
-        new_note_index = root + 0
-      when 1
-        new_note_index = root + 2
-      when 2
-        new_note_index = root + 4
-      when 3
-        new_note_index = root + 6
-      when 4
-        new_note_index = root + 4
-      when 5
-        new_note_index = root + 2
-      when 6
-        new_note_index = root + 0
-      when 7
-        new_note_index = root + 2
-      end
+      new_note_index = root + @pattern_array[@step % 8]
     end
 
     if @playing_note != -1
@@ -175,8 +171,7 @@ class PRMC1Core
     end
 
     if new_note_index != 0
-      note_array = [-1, 48, 50, 52, 53, 55, 57, 59, 60, 62, 64, 65, 67, 69, 71]
-      @playing_note = note_array[new_note_index]
+      @playing_note = @scale_note_array[new_note_index]
       @midi.send_note_on(@playing_note, 100, @midi_channel)
     else
       @playing_note = -1
@@ -188,18 +183,23 @@ class PRMC1Core
 
     case key
     when 0
-      @root_array[0] = (value + 8) / 16
-      set_green_leds_for_root(@root_array[0])
+      @root_array_candidate[0] = (value + 8) / 16
+      set_green_leds_for_root(@root_array_candidate[0])
     when 1
-      @root_array[1] = (value + 8) / 16
-      set_green_leds_for_root(@root_array[1])
+      @root_array_candidate[1] = (value + 8) / 16
+      set_green_leds_for_root(@root_array_candidate[1])
     when 2
-      @root_array[2] = (value + 8) / 16
-      set_green_leds_for_root(@root_array[2])
+      @root_array_candidate[2] = (value + 8) / 16
+      set_green_leds_for_root(@root_array_candidate[2])
     when 3
-      @root_array[3] = (value + 8) / 16
-      set_green_leds_for_root(@root_array[3])
+      @root_array_candidate[3] = (value + 8) / 16
+      set_green_leds_for_root(@root_array_candidate[3])
     when 4
+      if value < 64
+        @pattern_array_candidate = [0, 2, 4, 0, 2, 4, 0, 2]
+      else
+        @pattern_array_candidate = [0, 2, 4, 6, 4, 2, 0, 2]
+      end
     when 5
     when 6
       @midi.send_control_change(0x63, 0x01, @midi_channel)
