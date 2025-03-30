@@ -98,9 +98,13 @@ end
 
 class PRMC1Core
   def initialize
-    @led_byte = 0xFF
-    @msec = Time.now.usec / 1000
+    @root_array = [0, 0, 0, 0]
+    @bpm = 120
+
+    @usec = Time.now.usec
     @count = 0
+    @step = 31
+    @playing_note = -1
   end
 
   def begin(midi, midi_channel)
@@ -109,16 +113,56 @@ class PRMC1Core
   end
 
   def process
-    msec_old = @msec
-    @msec = Time.now.usec / 1000
+    usec = Time.now.usec
 
-    if msec_old > @msec
+    if ((usec - @usec + 1000000) % 1000000) >= 200000
+      @usec = usec
       @count += 1
-      p @count
 
-      @midi.send_note_off(60, 64, @midi_channel)
+      clock
+    end
+  end
 
-      @midi.send_note_on(60, 100, @midi_channel)
+  def clock
+    @step += 1
+    @step = 0 if @step == 32
+
+    p @step
+
+    root = @root_array[@step / 8]
+    new_note_index = 0
+
+    if root != 0
+      case @step % 8
+      when 0
+        new_note_index = root + 0
+      when 1
+        new_note_index = root + 2
+      when 2
+        new_note_index = root + 4
+      when 3
+        new_note_index = root + 6
+      when 4
+        new_note_index = root + 4
+      when 5
+        new_note_index = root + 2
+      when 6
+        new_note_index = root + 0
+      when 7
+        new_note_index = root + 2
+      end
+    end
+
+    if @playing_note != -1
+      @midi.send_note_off(@playing_note, 64, @midi_channel)
+    end
+
+    if new_note_index != 0
+      note_array = [-1, 48, 50, 52, 53, 55, 57, 59, 60, 62, 64, 65, 67, 69, 71]
+      @playing_note = note_array[new_note_index]
+      @midi.send_note_on(@playing_note, 100, @midi_channel)
+    else
+      @playing_note = -1
     end
   end
 
@@ -127,22 +171,23 @@ class PRMC1Core
 
     case key
     when 0
+      @root_array[0] = (value + 8) / 16
     when 1
+      @root_array[1] = (value + 8) / 16
     when 2
+      @root_array[2] = (value + 8) / 16
     when 3
+      @root_array[3] = (value + 8) / 16
     when 4
     when 5
     when 6
-    when 7
       @midi.send_control_change(0x63, 0x01, @midi_channel)
       @midi.send_control_change(0x62, 0x20, @midi_channel)
       @midi.send_control_change(0x06, value, @midi_channel)
+    when 7
+      @bpm = value + 56
     when 8
     end
-  end
-
-  def get_led_byte
-    @led_byte
   end
 end
 
@@ -161,7 +206,7 @@ angle8.begin(i2c1)
 midi = MIDI.new
 midi.begin(uart1)
 
-uart1.write((0xC0 + (MIDI_CHANNEL - 1)).chr + 0x26.chr)
+# uart1.write((0xC0 + (MIDI_CHANNEL - 1)).chr + 0x26.chr)
 midi.send_note_on(60, 100, MIDI_CHANNEL)
 sleep 1
 midi.send_note_off(60, 64, MIDI_CHANNEL)
@@ -185,21 +230,22 @@ loop do
 
     analog_input = angle8.get_analog_input_8bit
 
-    if current_analog_input_array[ch].nil?
-      current_analog_input_array[ch] = analog_input
-    elsif (analog_input > current_analog_input_array[ch] + 1) ||
-          (analog_input < current_analog_input_array[ch] - 1)
+    if current_analog_input_array[ch].nil? ||
+       (analog_input > current_analog_input_array[ch] + 1) ||
+       (analog_input < current_analog_input_array[ch] - 1)
       current_analog_input_array[ch] = analog_input
       prmc_1_core.on_parameter_changed(ch, 127 - (current_analog_input_array[ch] / 2))
     end
   end
 
-  prmc_1_core.process()
+  begin
+    prmc_1_core.process()
 
-  digital_input = angle8.get_digital_input()
+    digital_input = angle8.get_digital_input()
 
-  if current_digital_input != digital_input
-    current_digital_input = digital_input
-    prmc_1_core.on_parameter_changed(8, digital_input)
+    if current_digital_input != digital_input
+      current_digital_input = digital_input
+      prmc_1_core.on_parameter_changed(8, digital_input)
+    end
   end
 end
