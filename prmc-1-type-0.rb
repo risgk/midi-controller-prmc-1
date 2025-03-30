@@ -131,7 +131,7 @@ MIDI_CHANNEL = 1
 
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 
-i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 25 * 1000, sda_pin: 6, scl_pin: 7)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 10 * 1000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new
 angle8.begin(i2c1)
 
@@ -170,6 +170,8 @@ loop do
 
 
   (0..7).each do |ch|
+    # p Time.now.usec / 1000
+
     analog_input = angle8.get_analog_input_8bit(ch)
 
     if current_analog_input_array[ch].nil?
@@ -180,6 +182,8 @@ loop do
       prmc_1_core.on_parameter_changed(ch, 127 - (current_analog_input_array[ch] / 2))
     end
   end
+
+  # p Time.now.usec / 1000
 
   digital_input = angle8.get_digital_input()
 
