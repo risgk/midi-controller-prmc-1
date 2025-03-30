@@ -99,6 +99,8 @@ end
 class PRMC1Core
   def initialize
     @led_byte = 0xFF
+    @msec = Time.now.usec / 1000
+    @count = 0
   end
 
   def begin(midi, midi_channel)
@@ -106,12 +108,25 @@ class PRMC1Core
     @midi_channel = midi_channel
   end
 
+  def process
+    msec_old = @msec
+    @msec = Time.now.usec / 1000
+
+    if msec_old > @msec
+      @count += 1
+      p @count
+
+      @midi.send_note_off(60, 64, @midi_channel)
+
+      @midi.send_note_on(60, 100, @midi_channel)
+    end
+  end
+
   def on_parameter_changed(key, value)
     p [key, value]
 
     case key
     when 0
-      # @midi.send_note_on(value, 100, @midi_channel)
     when 1
     when 2
     when 3
@@ -119,6 +134,9 @@ class PRMC1Core
     when 5
     when 6
     when 7
+      @midi.send_control_change(0x63, 0x01, @midi_channel)
+      @midi.send_control_change(0x62, 0x20, @midi_channel)
+      @midi.send_control_change(0x06, value, @midi_channel)
     when 8
     end
   end
@@ -142,6 +160,8 @@ angle8.begin(i2c1)
 
 midi = MIDI.new
 midi.begin(uart1)
+
+uart1.write((0xC0 + (MIDI_CHANNEL - 1)).chr + 0x26.chr)
 midi.send_note_on(60, 100, MIDI_CHANNEL)
 sleep 1
 midi.send_note_off(60, 64, MIDI_CHANNEL)
@@ -155,27 +175,13 @@ current_digital_input      = nil
 
 # loop
 
-cnt = 0
-current_time = 0
-
 loop do
-=begin
-  cnt += 1
-
-  msec = Time.now.usec / 1000
-
-  if current_time != msec
-    p [(msec - current_time + 1000) % 1000]
-  end
-
-  current_time = msec
-
-  p msec
-=end
-
-
   (0..7).each do |ch|
+    prmc_1_core.process()
+
     angle8.prepare_to_get_analog_input_8bit(ch)
+
+    prmc_1_core.process()
 
     analog_input = angle8.get_analog_input_8bit
 
@@ -188,12 +194,12 @@ loop do
     end
   end
 
+  prmc_1_core.process()
+
   digital_input = angle8.get_digital_input()
 
   if current_digital_input != digital_input
     current_digital_input = digital_input
     prmc_1_core.on_parameter_changed(8, digital_input)
   end
-
-  led_byte_output = prmc_1_core.get_led_byte()
 end
