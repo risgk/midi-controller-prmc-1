@@ -26,6 +26,12 @@ Usage
 - TODO
 =end
 
+
+MIDI_CHANNEL = 1
+FOR_SAM2695 = true
+LED_ON_VALUE = 1
+
+
 require 'uart'
 require 'i2c'
 
@@ -94,6 +100,10 @@ class MIDI
     @uart.write((0xB0 + (channel - 1)).chr + control_number.chr + control_value.chr)
   end
 
+  def send_program_change(program_number, channel)
+    @uart.write((0xC0 + (channel - 1)).chr + program_number.chr)
+  end
+
   def send_clock
     @uart.write(0xF8.chr)
   end
@@ -150,7 +160,7 @@ class PRMC1Core
   end
 
   def on_parameter_changed(key, value)
-    p [key, value]
+    # p [key, value]
 
     case key
     when 0..3
@@ -169,18 +179,24 @@ class PRMC1Core
       end
     when 5
       @midi.send_control_change(0x4A, value, @midi_channel)
-      @midi.send_control_change(0x63, 0x01, @midi_channel)
-      @midi.send_control_change(0x62, 0x20, @midi_channel)
-      @midi.send_control_change(0x06, value, @midi_channel)
+      if FOR_SAM2695
+        @midi.send_control_change(0x63, 0x01, @midi_channel)
+        @midi.send_control_change(0x62, 0x20, @midi_channel)
+        @midi.send_control_change(0x06, value, @midi_channel)
+      end
       @green_leds_byte = 0x00
     when 6
       @midi.send_control_change(0x47, value, @midi_channel)
-      @midi.send_control_change(0x63, 0x01, @midi_channel)
-      @midi.send_control_change(0x62, 0x21, @midi_channel)
-      @midi.send_control_change(0x06, value, @midi_channel)
+      if FOR_SAM2695
+        @midi.send_control_change(0x63, 0x01, @midi_channel)
+        @midi.send_control_change(0x62, 0x21, @midi_channel)
+        @midi.send_control_change(0x06, value, @midi_channel)
+      end
       @green_leds_byte = 0x00
     when 7
-      @bpm = value + 56
+      @bpm = (value * 2) - 8
+      @bpm = 60 if @bpm < 60
+      @bpm = 240 if @bpm > 240
       @green_leds_byte = 0x00
     when 8
       if value > 0
@@ -258,7 +274,7 @@ class PRMC1Core
       @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
     end
 
-    p @step
+    # p @step
 
     root = @root_array[@step / 8]
     new_note_index = 0
@@ -283,8 +299,7 @@ end
 
 # setup
 
-LED_ON_VALUE = 1
-MIDI_CHANNEL = 1
+
 
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 
@@ -295,10 +310,12 @@ angle8.begin(i2c1)
 midi = MIDI.new
 midi.begin(uart1)
 
-# uart1.write((0xC0 + (MIDI_CHANNEL - 1)).chr + 0x26.chr)
-midi.send_note_on(60, 100, MIDI_CHANNEL)
-sleep 1
-midi.send_note_off(60, 64, MIDI_CHANNEL)
+if FOR_SAM2695
+  midi.send_program_change(0x26, MIDI_CHANNEL)
+  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
+  midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
+  midi.send_control_change(0x06, 0x7F, MIDI_CHANNEL)
+end
 
 prmc_1_core = PRMC1Core.new
 prmc_1_core.begin(midi, MIDI_CHANNEL)
