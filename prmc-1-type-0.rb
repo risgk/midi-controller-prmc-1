@@ -197,39 +197,43 @@ class PRMC1Core
     case key
     when 0..3
       @root_array_candidate[key] = ((value * 14 * 2) + 127) / 254 + 1
-      set_green_leds_for_root(@root_array_candidate[key])
+      set_green_leds(((@root_array_candidate[key] - 1) % 7) + 1)
     when 4
       if value < 32
         @pattern_array_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
-        @green_leds_byte = 0x10
+        set_green_leds(1)
       elsif value < 96
         @pattern_array_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
-        @green_leds_byte = 0x20
+        set_green_leds(2)
       else
         @pattern_array_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
-        @green_leds_byte = 0x40
+        set_green_leds(3)
       end
     when 5
       @midi.send_control_change(0x4A, value, @midi_channel)
+
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x20, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-      @green_leds_byte = 0x00
+
+      set_green_leds(0)
     when 6
       @midi.send_control_change(0x47, value, @midi_channel)
+
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x21, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-      @green_leds_byte = 0x00
+
+      set_green_leds(0)
     when 7
       @bpm = (value * 2) - 8
       @bpm = 60 if @bpm < 60
       @bpm = 240 if @bpm > 240
-      @green_leds_byte = 0x00
+      set_green_leds(0)
     when 8
       if value > 0
         @step = 31
@@ -252,8 +256,10 @@ class PRMC1Core
     @blue_leds_byte = 0x01 << (step / 8)
   end
 
-  def set_green_leds_for_root(root)
-    case ((root - 1) % 7) + 1
+  def set_green_leds(number)
+    case number
+    when 0
+      @green_leds_byte = 0x00
     when 1
       @green_leds_byte = 0x10
     when 2
