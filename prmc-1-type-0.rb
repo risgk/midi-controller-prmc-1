@@ -343,10 +343,7 @@ prmc_1_core = PRMC1Core.new
 prmc_1_core.begin(midi, MIDI_CHANNEL)
 
 if FOR_SAM2695
-  midi.send_program_change(0x26, MIDI_CHANNEL)
-  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
-  midi.send_control_change(0x62, 0x64, MIDI_CHANNEL)
-  midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
+  midi.send_program_change(0x51, MIDI_CHANNEL)
   midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
   midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
   midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
