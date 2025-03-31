@@ -154,11 +154,11 @@ end
 
 class PRMC1Core
   def initialize
-    @root_array_candidate = [0, 0, 0, 0]
     @root_array = []
+    @root_array_candidate = [1, 1, 1, 1]
     @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-    @pattern_array_candidate = [0, 2, 4, 6, 4, 2, 0, 2]
     @pattern_array = []
+    @pattern_array_candidate = [1, 1, 1, 1, 1, 1, 1, 1]
     @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
     @scale_note_array = [-1, 48, 50, 52, 53, 55, 57, 59,
                              60, 62, 64, 65, 67, 69, 71,
@@ -200,13 +200,13 @@ class PRMC1Core
       set_green_leds_for_root(@root_array_candidate[key])
     when 4
       if value < 32
-        @pattern_array_candidate = [0, 2, 4, 6, 4, 2, 0, 2]
+        @pattern_array_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
         @green_leds_byte = 0x10
       elsif value < 96
-        @pattern_array_candidate = [0, 2, 4, 0, 2, 4, 0, 2]
+        @pattern_array_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
         @green_leds_byte = 0x20
       else
-        @pattern_array_candidate = [0, 3, 4, 0, 3, 4, 0, 3]
+        @pattern_array_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
         @green_leds_byte = 0x40
       end
     when 5
@@ -299,7 +299,7 @@ class PRMC1Core
     new_note_index = 0
 
     if root != 0
-      new_note_index = root + @pattern_array[@step % 8]
+      new_note_index = root + @pattern_array[@step % 8] - 1
     end
 
     if @playing_note != -1
