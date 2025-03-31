@@ -261,29 +261,12 @@ class PRMC1Core
     end
   end
 
-  def set_blue_leds_for_step(step)
-    @blue_leds_byte = 0x01 << (step / 8)
+  def set_blue_leds(value)
+    @blue_leds_byte = [0x00, 0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08].at(value)
   end
 
-  def set_green_leds(number)
-    case number
-    when 0
-      @green_leds_byte = 0x00
-    when 1
-      @green_leds_byte = 0x10
-    when 2
-      @green_leds_byte = 0x30
-    when 3
-      @green_leds_byte = 0x20
-    when 4
-      @green_leds_byte = 0x60
-    when 5
-      @green_leds_byte = 0x40
-    when 6
-      @green_leds_byte = 0xC0
-    when 7
-      @green_leds_byte = 0x80
-    end
+  def set_green_leds(value)
+    @green_leds_byte = [0x00, 0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80].at(value)
   end
 
   def blue_leds_byte
@@ -303,7 +286,7 @@ class PRMC1Core
     @sub_step = 0
     @step += 1
     @step = 0 if @step == 32
-    set_blue_leds_for_step(@step)
+    set_blue_leds((@step / 8) * 2 + 1)
 
     if @step % 8 == 0
       @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
