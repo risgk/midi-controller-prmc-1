@@ -54,6 +54,7 @@ MIDI_CHANNEL = 1
 FOR_SAM2695 = true
 LED_ON_VALUE = 1
 TRANSPOSE = 0
+GATE_TIME = 3
 
 
 require 'uart'
@@ -280,11 +281,13 @@ class PRMC1Core
 
     @sub_step += 1
 
-    if @sub_step == 6
+    if @sub_step == GATE_TIME * 2 || @sub_step == 12
       if @playing_note != -1
         @midi.send_note_off(@playing_note, 64, @midi_channel)
       end
-    elsif @sub_step == 12
+    end
+
+    if @sub_step == 12
       @sub_step = 0
 
       @step += 1
