@@ -23,10 +23,10 @@ Required Software
 Usage
 -----
 
-- CH1 Knob: Root of Bar 1 Chord, 1 - 15
-- CH2 Knob: Root of Bar 2 Chord, 1 - 15
-- CH3 Knob: Root of Bar 3 Chord, 1 - 15
-- CH4 Knob: Root of Bar 4 Chord, 1 - 15
+- CH1 Knob: Root of Bar 1 Chord, 1 - 14
+- CH2 Knob: Root of Bar 2 Chord, 1 - 14
+- CH3 Knob: Root of Bar 3 Chord, 1 - 14
+- CH4 Knob: Root of Bar 4 Chord, 1 - 14
 - CH5 Knob: Arpeggio Type, 1 - 6
 - CH6 Knob: Filter Cutoff (Brightness), 0 - 127
 - CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
@@ -197,7 +197,7 @@ class PRMC1Core
   def on_parameter_changed(key, value)
     case key
     when 0..3
-      @root_array_candidate[key] = ((value * (15 - 1) * 2) + 127) / 254 + 1
+      @root_array_candidate[key] = ((value * (14 - 1) * 2) + 127) / 254 + 1
       set_green_leds(((@root_array_candidate[key] - 1) % 7) + 1)
     when 4
       pattern = ((value * (6 - 1) * 2) + 127) / 254 + 1
