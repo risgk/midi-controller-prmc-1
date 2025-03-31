@@ -4,6 +4,7 @@ MIDI Controller PRMC-1 (type-0) v0.0.0
 
 2025-01-30 ISGK Instruments
 
+
 Required Hardware
 -----------------
 
@@ -29,7 +30,7 @@ Usage
 - CH5 Knob: Arpeggio Type, 1 - 6
 - CH6 Knob: Filter Cutoff (Brightness), 0 - 127
 - CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
-- CH8 Knob: Tempo, 60 - 240
+- CH8 Knob: BPM, 60 - 240
 - SW Switch: 1 to Start Sequencer, 0 to Stop Sequencer
 
 
@@ -294,9 +295,9 @@ class PRMC1Core
   end
 
   def clock
-    @sub_step += 1
     @midi.send_clock()
 
+    @sub_step += 1
     return if @sub_step != 12
 
     @sub_step = 0
