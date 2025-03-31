@@ -182,15 +182,13 @@ class PRMC1Core
   end
 
   def process
-    usec = Time.now.usec
+    if @playing
+      usec = Time.now.usec
 
-    if @playing == false
-      return
-    end
-
-    if ((usec - @usec + 1000000) % 1000000) >= (2500000 / @bpm)
-      @usec = usec
-      clock
+      if ((usec - @usec + 1000000) % 1000000) >= (2500000 / @bpm)
+        @usec = usec
+        clock
+      end
     end
   end
 
@@ -281,34 +279,36 @@ class PRMC1Core
     @midi.send_clock()
 
     @sub_step += 1
-    return if @sub_step != 12
 
-    @sub_step = 0
-    @step += 1
-    @step = 0 if @step == 32
-    set_blue_leds((@step / 8) * 2 + 1)
+    if @sub_step == 6
+      if @playing_note != -1
+        @midi.send_note_off(@playing_note, 64, @midi_channel)
+      end
+    elsif @sub_step == 12
+      @sub_step = 0
 
-    if @step % 8 == 0
-      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
-    end
+      @step += 1
+      @step = 0 if @step == 32
+      set_blue_leds((@step / 8) * 2 + 1)
 
-    root = @root_array[@step / 8]
-    new_note_index = 0
+      if @step % 8 == 0
+        @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
+        @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
+      end
 
-    if root != 0
-      new_note_index = root + @pattern_array[@step % 8] - 1
-    end
+      root = @root_array[@step / 8]
+      new_note_index = 0
 
-    if @playing_note != -1
-      @midi.send_note_off(@playing_note, 64, @midi_channel)
-    end
+      if root != 0
+        new_note_index = root + @pattern_array[@step % 8] - 1
+      end
 
-    if new_note_index != 0
-      @playing_note = @scale_note_array[new_note_index] + TRANSPOSE
-      @midi.send_note_on(@playing_note, 100, @midi_channel)
-    else
-      @playing_note = -1
+      if new_note_index != 0
+        @playing_note = @scale_note_array[new_note_index] + TRANSPOSE
+        @midi.send_note_on(@playing_note, 100, @midi_channel)
+      else
+        @playing_note = -1
+      end
     end
   end
 end
