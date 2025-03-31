@@ -22,14 +22,14 @@ Required Software
 Usage
 -----
 
-- CH1 Knob: Root of Bar 1 Chord
-- CH2 Knob: Root of Bar 2 Chord
-- CH3 Knob: Root of Bar 3 Chord
-- CH4 Knob: Root of Bar 4 Chord
-- CH5 Knob: Arpeggio Type
-- CH6 Knob: Filter Cutoff (Brightness)
-- CH7 Knob: Filter Resonance (Harmonic Content)
-- CH8 Knob: Tempo 60-240
+- CH1 Knob: Root of Bar 1 Chord, 1 - 15
+- CH2 Knob: Root of Bar 2 Chord, 1 - 15
+- CH3 Knob: Root of Bar 3 Chord, 1 - 15
+- CH4 Knob: Root of Bar 4 Chord, 1 - 15
+- CH5 Knob: Arpeggio Type, 1 - 6
+- CH6 Knob: Filter Cutoff (Brightness), 0 - 127
+- CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
+- CH8 Knob: Tempo, 60 - 240
 - SW Switch: 1 to Start Sequencer, 0 to Stop Sequencer
 
 
@@ -196,19 +196,27 @@ class PRMC1Core
   def on_parameter_changed(key, value)
     case key
     when 0..3
-      @root_array_candidate[key] = ((value * 14 * 2) + 127) / 254 + 1
+      @root_array_candidate[key] = ((value * (15 - 1) * 2) + 127) / 254 + 1
       set_green_leds(((@root_array_candidate[key] - 1) % 7) + 1)
     when 4
-      if value < 32
+      pattern = ((value * (6 - 1) * 2) + 127) / 254 + 1
+
+      case pattern
+      when 1
+        @pattern_array_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
+      when 2
         @pattern_array_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
-        set_green_leds(1)
-      elsif value < 96
+      when 3
         @pattern_array_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
-        set_green_leds(2)
-      else
+      when 4
+        @pattern_array_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
+      when 5
         @pattern_array_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
-        set_green_leds(3)
+      when 6
+        @pattern_array_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
       end
+
+      set_green_leds(pattern)
     when 5
       @midi.send_control_change(0x4A, value, @midi_channel)
 
