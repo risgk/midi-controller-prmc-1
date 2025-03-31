@@ -227,7 +227,7 @@ class PRMC1Core
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
-      set_green_leds(0)
+      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 6
       @midi.send_control_change(0x47, value, @midi_channel)
 
@@ -237,12 +237,12 @@ class PRMC1Core
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
-      set_green_leds(0)
+      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 7
       @bpm = (value * 2) - 8
       @bpm = 60 if @bpm < 60
       @bpm = 240 if @bpm > 240
-      set_green_leds(0)
+      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 8
       if value > 0
         @step = 31
