@@ -169,6 +169,7 @@ class PRMC1Core
 
     @playing = false
     @usec = Time.now.usec
+    @usec_rest = 0
     @step = 31
     @sub_step = 11
     @playing_note = -1
@@ -185,9 +186,12 @@ class PRMC1Core
   def process
     if @playing
       usec = Time.now.usec
+      @usec_rest += (usec - @usec + 1000000) % 1000000
+      @usec = usec
+      usec_per_clock = 2500000 / @bpm
 
-      if ((usec - @usec + 1000000) % 1000000) >= (2500000 / @bpm)
-        @usec = usec
+      while @usec_rest >= usec_per_clock
+        @usec_rest -= usec_per_clock
         clock
       end
     end
