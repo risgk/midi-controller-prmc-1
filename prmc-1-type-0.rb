@@ -168,11 +168,11 @@ class PRMC1Core
                              72, 74, 76, 77, 79, 81, 83]
 
     @playing = false
-    @usec = Time.now.usec
-    @usec_remain = 0
+    @playing_note = -1
     @step = 31
     @sub_step = 11
-    @playing_note = -1
+    @usec = Time.now.usec
+    @usec_remain = 0
 
     @blue_leds_byte = 0x00
     @green_leds_byte = 0x00
@@ -248,18 +248,22 @@ class PRMC1Core
       set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 8
       if value > 0
+        @playing = true
+        @playing_note = -1
         @step = 31
         @sub_step = 11
-        @playing = true
+        @usec = Time.now.usec
+        @usec_remain = 0
+
         @midi.send_start()
       else
-        if @playing_note != -1
-          @midi.send_note_off(@playing_note, 64, @midi_channel)
-        end
-
         @midi.send_stop()
         @playing = false
         @blue_leds_byte = 0x00
+
+        if @playing_note != -1
+          @midi.send_note_off(@playing_note, 64, @midi_channel)
+        end
       end
     end
   end
