@@ -156,6 +156,7 @@ end
 
 class PRMC1Core
   def initialize
+    @bpm = 120
     @root_array = []
     @root_array_candidate = [1, 1, 1, 1]
     @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
@@ -165,11 +166,10 @@ class PRMC1Core
     @scale_note_array = [-1, 48, 50, 52, 53, 55, 57, 59,
                              60, 62, 64, 65, 67, 69, 71,
                              72, 74, 76, 77, 79, 81, 83]
-    @bpm = 120
 
     @playing = false
     @usec = Time.now.usec
-    @usec_rest = 0
+    @usec_remain = 0
     @step = 31
     @sub_step = 11
     @playing_note = -1
@@ -186,12 +186,12 @@ class PRMC1Core
   def process
     if @playing
       usec = Time.now.usec
-      @usec_rest += (usec - @usec + 1000000) % 1000000
+      @usec_remain += (usec - @usec + 1000000) % 1000000
       @usec = usec
       usec_per_clock = 2500000 / @bpm
 
-      while @usec_rest >= usec_per_clock
-        @usec_rest -= usec_per_clock
+      while @usec_remain >= usec_per_clock
+        @usec_remain -= usec_per_clock
         clock
       end
     end
