@@ -2,7 +2,7 @@
 MIDI Controller PRMC-1 (type-0) v0.0.0
 ======================================
 
-2025-01-30 ISGK Instruments
+2025-01-30 ISGK Instruments (Ryo Ishigaki)
 
 
 Required Hardware
@@ -27,7 +27,7 @@ Usage
 - CH2 Knob: Root of Step (Bar) 2 Chord, 1 - 14
 - CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14
 - CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14
-- CH5 Knob: Arpeggio Type, 1 - 6
+- CH5 Knob: Arpeggio Pattern, 1 - 6
     - 1: Triad, Up
     - 2: Triad, Up-Down
     - 3: 7th Chord (Tetrad), Up
@@ -175,9 +175,9 @@ class PRMC1Core
 
     @playing = false
     @playing_note = -1
-    @step = 3
-    @sub_step = 95
-    @usec = Time.now.usec
+    @step = 0
+    @sub_step = 0
+    @usec = 0
     @usec_remain = 0
 
     @blue_leds_byte = 0x00
