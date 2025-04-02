@@ -312,8 +312,11 @@ class PRMC1Core
     if @sub_step % 12 == 0
       root = @root_array[@step]
       note_index = root + @pattern_array[@sub_step / 12] - 1
-      @playing_note = @scale_note_array[note_index] + TRANSPOSE
-      @midi.send_note_on(@playing_note, 100, @midi_channel)
+      @playing_note = @scale_note_array[note_index]
+      if @playing_note != -1
+        @playing_note += TRANSPOSE
+        @midi.send_note_on(@playing_note, 100, @midi_channel)
+      end
     end
   end
 end
