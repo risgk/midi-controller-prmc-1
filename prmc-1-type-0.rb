@@ -81,43 +81,43 @@ class M5UnitAngle8
 
   def set_led_color_red(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def set_led_color_green(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def set_led_color_blue(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def prepare_to_get_analog_input_8bit(ch)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_ANALOG_INPUT_8B_REG + ch)
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def get_analog_input_8bit
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def prepare_to_get_digital_input
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_DIGITAL_INPUT_REG)
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 
   def get_digital_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
-  rescue StandardError
+  rescue
     retry  # workaround for Timeout error in I2C
   end
 end
@@ -302,8 +302,6 @@ class PRMC1Core
       @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
       set_blue_leds(@step * 2 + 1)
     end
-
-    p [@step,@sub_step]
 
     if @sub_step % 12 == GATE_TIME * 2 || @sub_step % 12 == 0
       if @playing_note != -1
