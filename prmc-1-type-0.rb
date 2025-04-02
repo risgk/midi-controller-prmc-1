@@ -23,11 +23,17 @@ Required Software
 Usage
 -----
 
-- CH1 Knob: Root of Bar 1 Chord, 1 - 14
-- CH2 Knob: Root of Bar 2 Chord, 1 - 14
-- CH3 Knob: Root of Bar 3 Chord, 1 - 14
-- CH4 Knob: Root of Bar 4 Chord, 1 - 14
+- CH1 Knob: Root of Step (Bar) 1 Chord, 1 - 14
+- CH2 Knob: Root of Step (Bar) 2 Chord, 1 - 14
+- CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14
+- CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14
 - CH5 Knob: Arpeggio Type, 1 - 6
+    - 1: Triad, Up
+    - 2: Triad, Up-Down
+    - 3: 7th Chord (Tetrad), Up
+    - 4: 7th Chord (Tetrad), Up-Down
+    - 5: Supended 4th, Up
+    - 6: Supended 4th, Up-Down
 - CH6 Knob: Filter Cutoff (Brightness), 0 - 127
 - CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
 - CH8 Knob: BPM, 60 - 240
@@ -169,8 +175,8 @@ class PRMC1Core
 
     @playing = false
     @playing_note = -1
-    @step = 31
-    @sub_step = 11
+    @step = 3
+    @sub_step = 95
     @usec = Time.now.usec
     @usec_remain = 0
 
@@ -192,7 +198,7 @@ class PRMC1Core
 
       while @usec_remain >= usec_per_clock
         @usec_remain -= usec_per_clock
-        clock
+        receive_midi_clock
       end
     end
   end
@@ -250,14 +256,14 @@ class PRMC1Core
       if value > 0
         @playing = true
         @playing_note = -1
-        @step = 31
-        @sub_step = 11
+        @step = 3
+        @sub_step = 95
         @usec = Time.now.usec
         @usec_remain = 0
 
-        @midi.send_start()
+        @midi.send_start
       else
-        @midi.send_stop()
+        @midi.send_stop
         @playing = false
         @blue_leds_byte = 0x00
 
@@ -284,42 +290,32 @@ class PRMC1Core
     @green_leds_byte
   end
 
-  def clock
-    @midi.send_clock()
-
+  def receive_midi_clock
+    @midi.send_clock
     @sub_step += 1
 
-    if @sub_step == GATE_TIME * 2 || @sub_step == 12
+    if @sub_step == 96
+      @sub_step = 0
+      @step += 1
+      @step = 0 if @step == 4
+      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
+      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
+      set_blue_leds(@step * 2 + 1)
+    end
+
+    p [@step,@sub_step]
+
+    if @sub_step % 12 == GATE_TIME * 2 || @sub_step % 12 == 0
       if @playing_note != -1
         @midi.send_note_off(@playing_note, 64, @midi_channel)
       end
     end
 
-    if @sub_step == 12
-      @sub_step = 0
-
-      @step += 1
-      @step = 0 if @step == 32
-      set_blue_leds((@step / 8) * 2 + 1)
-
-      if @step % 8 == 0
-        @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-        @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
-      end
-
-      root = @root_array[@step / 8]
-      new_note_index = 0
-
-      if root != 0
-        new_note_index = root + @pattern_array[@step % 8] - 1
-      end
-
-      if new_note_index != 0
-        @playing_note = @scale_note_array[new_note_index] + TRANSPOSE
-        @midi.send_note_on(@playing_note, 100, @midi_channel)
-      else
-        @playing_note = -1
-      end
+    if @sub_step % 12 == 0
+      root = @root_array[@step]
+      note_index = root + @pattern_array[@sub_step / 12] - 1
+      @playing_note = @scale_note_array[note_index] + TRANSPOSE
+      @midi.send_note_on(@playing_note, 100, @midi_channel)
     end
   end
 end
@@ -351,11 +347,11 @@ current_digital_input      = nil
 
 loop do
   (0..7).each do |ch|
-    prmc_1_core.process()
+    prmc_1_core.process
 
     angle8.prepare_to_get_analog_input_8bit(ch)
 
-    prmc_1_core.process()
+    prmc_1_core.process
 
     analog_input = angle8.get_analog_input_8bit
 
@@ -368,13 +364,13 @@ loop do
   end
 
   begin
-    prmc_1_core.process()
+    prmc_1_core.process
 
-    angle8.prepare_to_get_digital_input()
+    angle8.prepare_to_get_digital_input
 
-    prmc_1_core.process()
+    prmc_1_core.process
 
-    digital_input = angle8.get_digital_input()
+    digital_input = angle8.get_digital_input
 
     if current_digital_input != digital_input
       current_digital_input = digital_input
@@ -383,13 +379,13 @@ loop do
   end
 
   (0..3).each do |ch|
-    prmc_1_core.process()
+    prmc_1_core.process
 
     angle8.set_led_color_blue(ch, ((prmc_1_core.blue_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
   end
 
   (4..7).each do |ch|
-    prmc_1_core.process()
+    prmc_1_core.process
 
     angle8.set_led_color_green(ch, ((prmc_1_core.green_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
   end
