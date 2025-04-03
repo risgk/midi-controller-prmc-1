@@ -28,12 +28,12 @@ Usage
 - CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14
 - CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14
 - CH5 Knob: Arpeggio Pattern, 1 - 6
-    - 1: Triad, Up
-    - 2: Triad, Up-Down
-    - 3: 7th Chord (Tetrad), Up
-    - 4: 7th Chord (Tetrad), Up-Down
-    - 5: Supended 4th, Up
-    - 6: Supended 4th, Up-Down
+    - 1: Triad, Up (8th)
+    - 2: Triad, Up & Down (8th)
+    - 3: 7th Chord (Tetrad), Up (8th)
+    - 4: 7th Chord (Tetrad), Up & Down (8th)
+    - 5: Supended 4th, Up (8th)
+    - 6: Supended 4th, Up & Down (8th)
 - CH6 Knob: Filter Cutoff (Brightness), 0 - 127
 - CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
 - CH8 Knob: BPM, 60 - 240
