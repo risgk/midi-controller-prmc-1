@@ -2,22 +2,22 @@
 MIDI Controller PRMC-1 (type-0) v0.0.0
 ======================================
 
-2025-01-30 ISGK Instruments (Ryo Ishigaki)
+2025-04-04 ISGK Instruments (Ryo Ishigaki)
 
 
 Required Hardware
 -----------------
 
-- Raspberry Pi Pico <https://www.raspberrypi.com/products/raspberry-pi-pico/>
-- Grove Shield for Pi Pico <https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/>
-- M5Stack Unit 8Angle <https://docs.m5stack.com/en/unit/8angle>
-- M5Stack Unit MIDI <https://docs.m5stack.com/en/unit/Unit-MIDI>
+- Raspberry Pi Pico https://www.raspberrypi.com/products/raspberry-pi-pico/
+- Grove Shield for Pi Pico https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/
+- M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle
+- M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI
 
 
 Required Software
 -----------------
 
-- R2P2 0.3.0 <https://github.com/picoruby/R2P2/releases/tag/0.3.0>
+- R2P2 0.3.0 https://github.com/picoruby/R2P2/releases/tag/0.3.0
 
 
 Usage
@@ -43,16 +43,8 @@ Usage
 License
 -------
 
-![CC0](http://i.creativecommons.org/p/zero/1.0/88x31.png)
-
-**MIDI Controller PRMC-1 (type-0) by ISGK Instruments (Ryo Ishigaki)**
-
-To the extent possible under law, ISGK Instruments (Ryo Ishigaki)
-has waived all copyright and related or neighboring rights
-to MIDI Controller PRMC-1 (type-0).
-
-You should have received a copy of the CC0 legalcode along with this
-work.  If not, see <http://creativecommons.org/publicdomain/zero/1.0/>.
+MIDI Controller PRMC-1 (type-0) by ISGK Instruments (Ryo Ishigaki) is marked with CC0 1.0.
+To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
 =end
 
 # options
