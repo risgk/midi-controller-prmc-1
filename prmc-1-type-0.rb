@@ -23,10 +23,10 @@ Required Software
 Usage
 -----
 
-- CH1 Knob: Root of Step (Bar) 1 Chord, 1 - 14
-- CH2 Knob: Root of Step (Bar) 2 Chord, 1 - 14
-- CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14
-- CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14
+- CH1 Knob: Root of Step (Bar) 1 Chord, 1 - 14 degree (in C Major Scale)
+- CH2 Knob: Root of Step (Bar) 2 Chord, 1 - 14 degree (in C Major Scale)
+- CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14 degree (in C Major Scale)
+- CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14 degree (in C Major Scale)
 - CH5 Knob: Arpeggio Pattern, 1 - 6
     - 1: Triad, Up (8th)
     - 2: Triad, Up & Down (8th)
