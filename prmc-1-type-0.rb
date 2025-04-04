@@ -23,21 +23,21 @@ Required Software
 Usage
 -----
 
-- CH1 Knob: Root of Step (Bar) 1 Chord, 1 - 14 degree (in C Major Scale)
-- CH2 Knob: Root of Step (Bar) 2 Chord, 1 - 14 degree (in C Major Scale)
-- CH3 Knob: Root of Step (Bar) 3 Chord, 1 - 14 degree (in C Major Scale)
-- CH4 Knob: Root of Step (Bar) 4 Chord, 1 - 14 degree (in C Major Scale)
+- CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
+- CH2 Knob: Root of Step 2 Chord, ditto
+- CH3 Knob: Root of Step 3 Chord, ditto
+- CH4 Knob: Root of Step 4 Chord, ditto
 - CH5 Knob: Arpeggio Pattern, 1 - 6
-    - 1: Triad, Up (8th)
-    - 2: Triad, Up & Down (8th)
-    - 3: 7th Chord (Tetrad), Up (8th)
-    - 4: 7th Chord (Tetrad), Up & Down (8th)
-    - 5: Supended 4th, Up (8th)
-    - 6: Supended 4th, Up & Down (8th)
+    - Pattern 1: Triad, Up, 8th Note
+    - Pattern 2: Triad, Up & Down, 8th Note
+    - Pattern 3: 7th Chord, Up, 8th Note
+    - Pattern 4: 7th Chord, Up & Down, 8th Note
+    - Pattern 5: Supended 4th, Up, 8th Note
+    - Pattern 6: Supended 4th, Up & Down, 8th Note
 - CH6 Knob: Filter Cutoff (Brightness), 0 - 127
 - CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
 - CH8 Knob: BPM, 60 - 240
-- SW Switch: 1 to Start Sequencer, 0 to Stop Sequencer
+- SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 
 
 License
