@@ -154,6 +154,7 @@ class PRMC1Core
     @arpeggio_intervals = []
     @arpeggio_intervals_candidate = []
     @number_of_sub_step = 8
+    @number_of_sub_step_candidate = 8
     @scale_notes = [-1, 48, 50, 52, 53, 55, 57, 59,
                         60, 62, 64, 65, 67, 69, 71,
                         72, 74, 76, 77, 79, 81, 83]
@@ -197,16 +198,22 @@ class PRMC1Core
       case arpeggio_pattern
       when 1
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
+        @number_of_sub_step_candidate = 8
       when 2
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
+        @number_of_sub_step_candidate = 8
       when 3
         @arpeggio_intervals_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
+        @number_of_sub_step_candidate = 8
       when 4
         @arpeggio_intervals_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
+        @number_of_sub_step_candidate = 8
       when 5
         @arpeggio_intervals_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
+        @number_of_sub_step_candidate = 8
       when 6
         @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
+        @number_of_sub_step_candidate = 8
       end
 
       set_parameter_status_bits(arpeggio_pattern)
@@ -283,6 +290,7 @@ class PRMC1Core
       @step = 0 if @step == 4
       @root_degrees_candidate.each_with_index { |n, idx| @root_degrees[idx] = n }
       @arpeggio_intervals_candidate.each_with_index { |n, idx| @arpeggio_intervals[idx] = n }
+      @number_of_sub_step = @number_of_sub_step_candidate
       set_step_status_bits(@step + 1)
     end
 
