@@ -210,7 +210,7 @@ class PRMC1Core
         @pattern_array_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
       end
 
-      set_green_leds(pattern)
+      set_green_leds(arpeggio_pattern)
     when 5
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
