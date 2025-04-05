@@ -148,26 +148,22 @@ end
 
 class PRMC1Core
   def initialize
-    @bpm = 120
-    @root_array = []
-    @root_array_candidate = [1, 1, 1, 1]
-    @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-    @pattern_array = []
-    @pattern_array_candidate = [1, 1, 1, 1, 1, 1, 1, 1]
-    @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
-    @scale_note_array = [-1, 48, 50, 52, 53, 55, 57, 59,
-                             60, 62, 64, 65, 67, 69, 71,
-                             72, 74, 76, 77, 79, 81, 83]
-
+    @bpm = 0
+    @root_degrees = []
+    @root_degrees_candidate = []
+    @arpeggio_intervals = []
+    @arpeggio_intervals_candidate = []
+    @scale_notes = [-1, 48, 50, 52, 53, 55, 57, 59,
+                        60, 62, 64, 65, 67, 69, 71,
+                        72, 74, 76, 77, 79, 81, 83]
     @playing = false
     @playing_note = -1
     @step = 0
-    @sub_step = 0
+    @number_of_clock = 0
     @usec = 0
     @usec_remain = 0
-
-    @blue_leds_byte = 0x00
-    @green_leds_byte = 0x00
+    @step_status_bits = 0x0
+    @parameter_status_bits = 0x0
   end
 
   def begin(midi, midi_channel)
@@ -192,31 +188,31 @@ class PRMC1Core
   def on_parameter_changed(key, value)
     case key
     when 0..3
-      @root_array_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
-      set_green_leds(((@root_array_candidate[key] - 1) % 7) + 1)
+      @root_degrees_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
+      set_parameter_status_bits(((@root_degrees_candidate[key] - 1) % 7) + 1)
     when 4
       arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
 
       case arpeggio_pattern
       when 1
-        @pattern_array_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
+        @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
       when 2
-        @pattern_array_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
+        @arpeggio_intervals_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
       when 3
-        @pattern_array_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
+        @arpeggio_intervals_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
       when 4
-        @pattern_array_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
+        @arpeggio_intervals_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
       when 5
-        @pattern_array_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
+        @arpeggio_intervals_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
       when 6
-        @pattern_array_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
+        @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
       end
 
-      set_green_leds(arpeggio_pattern)
+      set_parameter_status_bits(arpeggio_pattern)
     when 5
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
-      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
@@ -226,7 +222,7 @@ class PRMC1Core
     when 6
       # filter resonance
       @midi.send_control_change(0x47, value, @midi_channel)
-      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
@@ -237,13 +233,13 @@ class PRMC1Core
       @bpm = value * 2 - 8
       @bpm = 60 if @bpm < 60
       @bpm = 240 if @bpm > 240
-      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
         @playing = true
         @playing_note = -1
         @step = 3
-        @sub_step = 95
+        @number_of_clock = 95
         @usec = Time.now.usec
         @usec_remain = 0
 
@@ -260,48 +256,48 @@ class PRMC1Core
     end
   end
 
-  def set_blue_leds(value)
-    @blue_leds_byte = [0x00, 0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08].at(value)
+  def set_step_status_bits(value)
+    @step_status_bits = [0x01, 0x02, 0x04, 0x08].at(value)
   end
 
-  def set_green_leds(value)
-    @green_leds_byte = [0x00, 0x10, 0x30, 0x20, 0x60, 0x40, 0xC0, 0x80].at(value)
+  def set_parameter_status_bits(value)
+    @parameter_status_bits = [0x00, 0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08].at(value)
   end
 
-  def blue_leds_byte
-    @blue_leds_byte
+  def step_status_bits
+    @step_status_bits
   end
 
-  def green_leds_byte
-    @green_leds_byte
+  def parameter_status_bits
+    @parameter_status_bits
   end
 
   def receive_midi_clock
     @midi.send_clock
-    @sub_step += 1
+    @number_of_clock += 1
 
-    if @sub_step == 96
-      @sub_step = 0
+    if @number_of_clock == 96
+      @number_of_clock = 0
       @step += 1
       @step = 0 if @step == 4
-      @root_array_candidate.each_with_index { |n, idx| @root_array[idx] = n }
-      @pattern_array_candidate.each_with_index { |n, idx| @pattern_array[idx] = n }
-      set_blue_leds(@step * 2 + 1)
+      @root_degrees_candidate.each_with_index { |n, idx| @root_degrees[idx] = n }
+      @arpeggio_intervals_candidate.each_with_index { |n, idx| @arpeggio_intervals[idx] = n }
+      set_step_status_bits(@step)
     end
 
-    if @sub_step % 12 == GATE_TIME * 2 || @sub_step % 12 == 0
+    if @number_of_clock % 12 == GATE_TIME * 2 || @number_of_clock % 12 == 0
       if @playing_note != -1
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
     end
 
-    if @sub_step % 12 == 0
-      root = @root_array[@step]
-      interval = @pattern_array[@sub_step / 12]
+    if @number_of_clock % 12 == 0
+      root = @root_degrees[@step]
+      interval = @arpeggio_intervals[@number_of_clock / 12]
 
       if root > 0 && interval > 0
         note_index = root + interval - 1
-        @playing_note = @scale_note_array[note_index]
+        @playing_note = @scale_notes[note_index]
       else
         @playing_note = -1
       end
@@ -365,11 +361,11 @@ loop do
 
   (0..3).each do |ch|
     prmc_1_core.process
-    angle8.set_led_color_blue(ch, (prmc_1_core.blue_leds_byte >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_led_color_blue(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 
   (4..7).each do |ch|
     prmc_1_core.process
-    angle8.set_led_color_green(ch, (prmc_1_core.green_leds_byte >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_led_color_green(ch, ((prmc_1_core.parameter_status_bits << 4) >> ch & 0x01) * LED_ON_VALUE)
   end
 end
