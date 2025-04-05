@@ -294,7 +294,7 @@ class PRMC1Core
       set_step_status_bits(@step + 1)
     end
 
-    if @number_of_clock % (96 / @number_of_sub_step) == (GATE_TIME * @number_of_sub_step) / 4
+    if @number_of_clock % (96 / @number_of_sub_step) == (GATE_TIME * 16) / @number_of_sub_step
       if @playing_note != -1
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
