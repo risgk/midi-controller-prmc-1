@@ -4,7 +4,6 @@ MIDI Controller PRMC-1 (type-0)
 
 MIDI Controller with PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
-
 Required Hardware
 -----------------
 
@@ -13,12 +12,10 @@ Required Hardware
 - M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle
 - M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI
 
-
 Required Software
 -----------------
 
 - R2P2 0.3.0 https://github.com/picoruby/R2P2/releases/tag/0.3.0
-
 
 Usage
 -----
@@ -39,7 +36,6 @@ Usage
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 
-
 License
 -------
 
@@ -47,17 +43,15 @@ MIDI Controller PRMC-1 (type-0) by ISGK Instruments (Ryo Ishigaki) is marked wit
 To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
 =end
 
+require 'uart'
+require 'i2c'
+
 # options
 MIDI_CHANNEL = 1
 FOR_SAM2695 = true
 LED_ON_VALUE = 1
 TRANSPOSE = 0
 GATE_TIME = 3
-
-
-require 'uart'
-require 'i2c'
-
 
 class M5UnitAngle8
   # refs https://github.com/m5stack/M5Unit-8Angle
@@ -114,7 +108,6 @@ class M5UnitAngle8
   end
 end
 
-
 class MIDI
   # refs https://github.com/FortySevenEffects/arduino_midi_library
 
@@ -150,7 +143,6 @@ class MIDI
     @uart.write(0xFC.chr)
   end
 end
-
 
 class PRMC1Core
   def initialize
@@ -320,7 +312,6 @@ class PRMC1Core
   end
 end
 
-
 # setup
 
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
@@ -341,7 +332,6 @@ end
 
 current_analog_input_array = [nil, nil, nil, nil, nil, nil, nil, nil, nil]
 current_digital_input      = nil
-
 
 # loop
 
