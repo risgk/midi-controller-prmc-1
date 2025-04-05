@@ -50,6 +50,8 @@ require 'i2c'
 MIDI_CHANNEL = 1
 TRANSPOSE = 0
 GATE_TIME = 3
+NOTE_ON_VELOCITY = 100
+NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
 FOR_SAM2695 = true
 
@@ -176,9 +178,9 @@ class PRMC1Core
   def process
     if @playing
       usec = Time.now.usec
-      @usec_remain += (usec - @usec + 1000000) % 1000000
+      @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
       @usec = usec
-      usec_per_clock = 2500000 / @bpm
+      usec_per_clock = 2_500_000 / @bpm
 
       while @usec_remain >= usec_per_clock
         @usec_remain -= usec_per_clock
@@ -252,7 +254,7 @@ class PRMC1Core
         @blue_leds_byte = 0x00
 
         if @playing_note != -1
-          @midi.send_note_off(@playing_note, 64, @midi_channel)
+          @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
         end
       end
     end
@@ -289,7 +291,7 @@ class PRMC1Core
 
     if @sub_step % 12 == GATE_TIME * 2 || @sub_step % 12 == 0
       if @playing_note != -1
-        @midi.send_note_off(@playing_note, 64, @midi_channel)
+        @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
     end
 
@@ -306,7 +308,7 @@ class PRMC1Core
 
       if @playing_note != -1
         @playing_note += TRANSPOSE
-        @midi.send_note_on(@playing_note, 100, @midi_channel)
+        @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel)
       end
     end
   end
@@ -315,7 +317,7 @@ end
 # setup
 
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
-i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20 * 1000, sda_pin: 6, scl_pin: 7)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20_000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new
 angle8.begin(i2c1)
 midi = MIDI.new
