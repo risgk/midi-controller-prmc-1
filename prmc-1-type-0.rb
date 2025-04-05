@@ -83,13 +83,13 @@ class M5UnitAngle8
     retry
   end
 
-  def prepare_to_get_analog_input_8bit(ch)
+  def prepare_to_get_analog_input(ch)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_ANALOG_INPUT_8B_REG + ch)
   rescue
     retry
   end
 
-  def get_analog_input_8bit
+  def get_analog_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
   rescue
     retry
@@ -338,9 +338,9 @@ current_digital_input      = nil
 loop do
   (0..7).each do |ch|
     prmc_1_core.process
-    angle8.prepare_to_get_analog_input_8bit(ch)
+    angle8.prepare_to_get_analog_input(ch)
     prmc_1_core.process
-    analog_input = angle8.get_analog_input_8bit
+    analog_input = angle8.get_analog_input
 
     if current_analog_input_array[ch].nil? ||
        (analog_input > current_analog_input_array[ch] + 1) ||
