@@ -48,10 +48,10 @@ require 'i2c'
 
 # options
 MIDI_CHANNEL = 1
-FOR_SAM2695 = true
-LED_ON_VALUE = 1
 TRANSPOSE = 0
 GATE_TIME = 3
+LED_ON_VALUE = 1
+FOR_SAM2695 = true
 
 class M5UnitAngle8
   # refs https://github.com/m5stack/M5Unit-8Angle
@@ -68,43 +68,43 @@ class M5UnitAngle8
   def set_led_color_red(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def set_led_color_green(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def set_led_color_blue(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def prepare_to_get_analog_input_8bit(ch)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_ANALOG_INPUT_8B_REG + ch)
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def get_analog_input_8bit
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def prepare_to_get_digital_input
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_DIGITAL_INPUT_REG)
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 
   def get_digital_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
   rescue
-    retry  # workaround for Timeout error in I2C
+    retry
   end
 end
 
@@ -338,11 +338,8 @@ current_digital_input      = nil
 loop do
   (0..7).each do |ch|
     prmc_1_core.process
-
     angle8.prepare_to_get_analog_input_8bit(ch)
-
     prmc_1_core.process
-
     analog_input = angle8.get_analog_input_8bit
 
     if current_analog_input_array[ch].nil? ||
@@ -355,11 +352,8 @@ loop do
 
   begin
     prmc_1_core.process
-
     angle8.prepare_to_get_digital_input
-
     prmc_1_core.process
-
     digital_input = angle8.get_digital_input
 
     if current_digital_input != digital_input
@@ -370,13 +364,11 @@ loop do
 
   (0..3).each do |ch|
     prmc_1_core.process
-
     angle8.set_led_color_blue(ch, ((prmc_1_core.blue_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
   end
 
   (4..7).each do |ch|
     prmc_1_core.process
-
     angle8.set_led_color_green(ch, ((prmc_1_core.green_leds_byte >> ch) & 0x01) * LED_ON_VALUE)
   end
 end
