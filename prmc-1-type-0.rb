@@ -190,12 +190,12 @@ class PRMC1Core
   def on_parameter_changed(key, value)
     case key
     when 0..3
-      @root_array_candidate[key] = ((value * (14 - 1) * 2) + 127) / 254 + 1
+      @root_array_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
       set_green_leds(((@root_array_candidate[key] - 1) % 7) + 1)
     when 4
-      pattern = ((value * (6 - 1) * 2) + 127) / 254 + 1
+      arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
 
-      case pattern
+      case arpeggio_pattern
       when 1
         @pattern_array_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
       when 2
@@ -212,30 +212,30 @@ class PRMC1Core
 
       set_green_leds(pattern)
     when 5
+      # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
+      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x20, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-
-      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 6
+      # filter resonance
       @midi.send_control_change(0x47, value, @midi_channel)
+      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x21, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-
-      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
     when 7
-      @bpm = (value * 2) - 8
+      @bpm = value * 2 - 8
       @bpm = 60 if @bpm < 60
       @bpm = 240 if @bpm > 240
-      set_green_leds(((value * (7 - 1) * 2) + 127) / 254 + 1)
+      set_green_leds((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
         @playing = true
