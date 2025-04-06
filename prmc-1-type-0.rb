@@ -161,7 +161,7 @@ class PRMC1Core
     @playing = false
     @playing_note = -1
     @step = 0
-    @number_of_clock = 0
+    @clock_count = 0
     @usec = 0
     @usec_remain = 0
     @step_status_bits = 0x0
@@ -250,7 +250,7 @@ class PRMC1Core
         @playing = true
         @playing_note = -1
         @step = 3
-        @number_of_clock = 95
+        @clock_count = 95
         @usec = Time.now.usec
         @usec_remain = 0
       else
@@ -284,10 +284,10 @@ class PRMC1Core
 
   def receive_midi_clock
     @midi.send_clock
-    @number_of_clock += 1
+    @clock_count += 1
 
-    if @number_of_clock == 96
-      @number_of_clock = 0
+    if @clock_count == 96
+      @clock_count = 0
       @step += 1
       @step = 0 if @step == 4
       @root_degrees_candidate.each_with_index { |n, idx| @root_degrees[idx] = n }
@@ -296,15 +296,15 @@ class PRMC1Core
       set_step_status_bits(@step + 1)
     end
 
-    if @number_of_clock % (96 / @number_of_sub_step) == (GATE_TIME * 16) / @number_of_sub_step
+    if @clock_count % (96 / @number_of_sub_step) == (GATE_TIME * 16) / @number_of_sub_step
       if @playing_note != -1
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
     end
 
-    if @number_of_clock % (96 / @number_of_sub_step) == 0
+    if @clock_count % (96 / @number_of_sub_step) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@number_of_clock / (96 / @number_of_sub_step)]
+      interval = @arpeggio_intervals[@clock_count / (96 / @number_of_sub_step)]
 
       if root > 0 && interval > 0
         note_index = root + interval - 1
