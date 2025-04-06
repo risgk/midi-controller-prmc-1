@@ -4,18 +4,18 @@ MIDI Controller PRMC-1 (type-0)
 
 MIDI Controller with PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
+Required Software
+-----------------
+
+- R2P2 0.3.0 https://github.com/picoruby/R2P2/releases/tag/0.3.0
+
 Required Hardware
 -----------------
 
 - Raspberry Pi Pico https://www.raspberrypi.com/products/raspberry-pi-pico/
 - Grove Shield for Pi Pico https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/
-- M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle
-- M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI
-
-Required Software
------------------
-
-- R2P2 0.3.0 https://github.com/picoruby/R2P2/releases/tag/0.3.0
+- M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle (I2C1)
+- M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI (UART1)
 
 Usage
 -----
