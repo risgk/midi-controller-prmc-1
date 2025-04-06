@@ -339,7 +339,7 @@ if FOR_SAM2695
   midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
 end
 
-current_input_array = []
+current_inputs = []
 
 # loop
 
@@ -350,11 +350,11 @@ loop do
     prmc_1_core.process
     analog_input = angle8.get_analog_input
 
-    if current_input_array[ch].nil? ||
-       analog_input > current_input_array[ch] + 1 ||
-       analog_input < current_input_array[ch] - 1
-      current_input_array[ch] = analog_input
-      prmc_1_core.on_parameter_changed(ch, 127 - current_input_array[ch] / 2)
+    if current_inputs[ch].nil? ||
+       analog_input > current_inputs[ch] + 1 ||
+       analog_input < current_inputs[ch] - 1
+      current_inputs[ch] = analog_input
+      prmc_1_core.on_parameter_changed(ch, 127 - current_inputs[ch] / 2)
     end
   end
 
@@ -364,9 +364,9 @@ loop do
     prmc_1_core.process
     digital_input = angle8.get_digital_input
 
-    if current_input_array[8] != digital_input
-      current_input_array[8] = digital_input
-      prmc_1_core.on_parameter_changed(8, current_input_array[8])
+    if current_inputs[8] != digital_input
+      current_inputs[8] = digital_input
+      prmc_1_core.on_parameter_changed(8, current_inputs[8])
     end
   end
 
