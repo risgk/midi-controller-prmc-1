@@ -55,8 +55,9 @@ NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
 FOR_SAM2695 = true
 
-# refs https://github.com/m5stack/M5Unit-8Angle
 class M5UnitAngle8
+  # refs https://github.com/m5stack/M5Unit-8Angle
+
   ANGLE8_I2C_ADDR            = 0x43
   ANGLE8_ANALOG_INPUT_8B_REG = 0x10
   ANGLE8_DIGITAL_INPUT_REG   = 0x20
@@ -109,8 +110,9 @@ class M5UnitAngle8
   end
 end
 
-# refs https://github.com/FortySevenEffects/arduino_midi_library
 class MIDI
+  # refs https://github.com/FortySevenEffects/arduino_midi_library
+
   def initialize(uart:)
     @uart = uart
   end
@@ -349,6 +351,7 @@ loop do
     angle8.prepare_to_get_digital_input
     prmc_1_core.process_sequencer
     digital_input = angle8.get_digital_input
+
     if current_inputs[8] != digital_input
       current_inputs[8] = digital_input
       prmc_1_core.change_parameter(8, current_inputs[8])
