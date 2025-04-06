@@ -155,8 +155,8 @@ class PRMC1Core
     @root_degrees_candidate = []
     @arpeggio_intervals = []
     @arpeggio_intervals_candidate = []
-    @number_of_step_division = 8
-    @number_of_step_division_candidate = 8
+    @step_division = 8
+    @step_division_candidate = 8
     @scale_notes = [-1, 48, 50, 52, 53, 55, 57, 59,
                         60, 62, 64, 65, 67, 69, 71,
                         72, 74, 76, 77, 79, 81, 83]
@@ -188,32 +188,32 @@ class PRMC1Core
     case key
     when 0..3
       @root_degrees_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
-      set_parameter_status_bits(((@root_degrees_candidate[key] - 1) % 7) + 1)
+      set_parameter_status(((@root_degrees_candidate[key] - 1) % 7) + 1)
     when 4
       arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
 
       case arpeggio_pattern
       when 1
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       when 2
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       when 3
         @arpeggio_intervals_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       when 4
         @arpeggio_intervals_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       when 5
         @arpeggio_intervals_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       when 6
         @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
-        @number_of_step_division_candidate = 8
+        @step_division_candidate = 8
       end
 
-      set_parameter_status_bits(arpeggio_pattern)
+      set_parameter_status(arpeggio_pattern)
     when 5
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
@@ -224,7 +224,7 @@ class PRMC1Core
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
-      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 6
       # filter resonance
       @midi.send_control_change(0x47, value, @midi_channel)
@@ -235,12 +235,12 @@ class PRMC1Core
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
-      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 7
       @bpm = value * 2 - 8
       @bpm = 60 if @bpm < 60
       @bpm = 240 if @bpm > 240
-      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
         @midi.send_start
@@ -258,17 +258,9 @@ class PRMC1Core
           @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
         end
 
-        set_step_status_bits(0)
+        set_step_status(0)
       end
     end
-  end
-
-  def set_step_status_bits(value)
-    @step_status_bits = [0x0, 0x1, 0x2, 0x4, 0x8].at(value)
-  end
-
-  def set_parameter_status_bits(value)
-    @parameter_status_bits = [0x0, 0x1, 0x3, 0x2, 0x6, 0x4, 0xC, 0x8].at(value)
   end
 
   def step_status_bits
@@ -278,6 +270,8 @@ class PRMC1Core
   def parameter_status_bits
     @parameter_status_bits
   end
+
+  # private
 
   def receive_midi_clock
     @midi.send_clock
@@ -289,19 +283,19 @@ class PRMC1Core
       @step = 0 if @step == 4
       @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
       @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
-      @number_of_step_division = @number_of_step_division_candidate
-      set_step_status_bits(@step + 1)
+      @step_division = @step_division_candidate
+      set_step_status(@step + 1)
     end
 
-    if @clock_count % (96 / @number_of_step_division) == (GATE_TIME * 16) / @number_of_step_division
+    if @clock_count % (96 / @step_division) == (GATE_TIME * 16) / @step_division
       if @playing_note != -1
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
     end
 
-    if @clock_count % (96 / @number_of_step_division) == 0
+    if @clock_count % (96 / @step_division) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@clock_count / (96 / @number_of_step_division)]
+      interval = @arpeggio_intervals[@clock_count / (96 / @step_division)]
 
       if root > 0 && interval > 0
         note_index = root + interval - 1
@@ -315,6 +309,14 @@ class PRMC1Core
         @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel)
       end
     end
+  end
+
+  def set_step_status(value)
+    @step_status_bits = [0x0, 0x1, 0x2, 0x4, 0x8].at(value)
+  end
+
+  def set_parameter_status(value)
+    @parameter_status_bits = [0x0, 0x1, 0x3, 0x2, 0x6, 0x4, 0xC, 0x8].at(value)
   end
 end
 
