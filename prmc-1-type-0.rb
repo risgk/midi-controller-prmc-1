@@ -147,6 +147,8 @@ class MIDI
 end
 
 class PRMC1Core
+  CLOCK_COUNT_PER_STEP = 96
+
   def initialize(midi:, midi_channel:)
     @midi = midi
     @midi_channel = midi_channel
@@ -277,7 +279,7 @@ class PRMC1Core
     @midi.send_clock
     @clock_count += 1
 
-    if @clock_count == 96
+    if @clock_count == CLOCK_COUNT_PER_STEP
       @clock_count = 0
       @step += 1
       @step = 0 if @step == 4
@@ -287,15 +289,16 @@ class PRMC1Core
       set_step_status(@step + 1)
     end
 
-    if @clock_count % (96 / @step_division) == (GATE_TIME * 16) / @step_division
+    if @clock_count % (CLOCK_COUNT_PER_STEP / @step_division) ==
+       (CLOCK_COUNT_PER_STEP * GATE_TIME) / 6 / @step_division
       if @playing_note != -1
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
       end
     end
 
-    if @clock_count % (96 / @step_division) == 0
+    if @clock_count % (CLOCK_COUNT_PER_STEP / @step_division) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@clock_count / (96 / @step_division)]
+      interval = @arpeggio_intervals[@clock_count / (CLOCK_COUNT_PER_STEP / @step_division)]
 
       if root > 0 && interval > 0
         note_index = root + interval - 1
