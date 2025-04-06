@@ -220,23 +220,25 @@ class PRMC1Core
     when 5
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
-      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x20, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
+
+      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 6
       # filter resonance
       @midi.send_control_change(0x47, value, @midi_channel)
-      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x21, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
+
+      set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 7
       @bpm = value * 2 - 8
       @bpm = 60 if @bpm < 60
@@ -244,32 +246,32 @@ class PRMC1Core
       set_parameter_status_bits((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
+        @midi.send_start
         @playing = true
         @playing_note = -1
         @step = 3
         @number_of_clock = 95
         @usec = Time.now.usec
         @usec_remain = 0
-
-        @midi.send_start
       else
         @midi.send_stop
         @playing = false
-        @blue_leds_byte = 0x00
 
         if @playing_note != -1
           @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
         end
+
+        set_step_status_bits(0)
       end
     end
   end
 
   def set_step_status_bits(value)
-    @step_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08].at(value)
+    @step_status_bits = [0x0, 0x1, 0x2, 0x4, 0x8].at(value)
   end
 
   def set_parameter_status_bits(value)
-    @parameter_status_bits = [0x00, 0x01, 0x03, 0x02, 0x06, 0x04, 0x0C, 0x08].at(value)
+    @parameter_status_bits = [0x0, 0x1, 0x3, 0x2, 0x6, 0x4, 0xC, 0x8].at(value)
   end
 
   def step_status_bits
