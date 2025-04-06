@@ -49,7 +49,7 @@ require 'i2c'
 # options
 MIDI_CHANNEL = 1
 TRANSPOSE = 0
-GATE_TIME = 3
+GATE_TIME = 3  # Max is 6
 NOTE_ON_VELOCITY = 100
 NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
@@ -170,7 +170,7 @@ class PRMC1Core
     @parameter_status_bits = 0x0
   end
 
-  def process
+  def process_sequencer
     if @playing
       usec = Time.now.usec
       @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
@@ -184,7 +184,7 @@ class PRMC1Core
     end
   end
 
-  def on_parameter_changed(key, value)
+  def change_parameter(key, value)
     case key
     when 0..3
       @root_degrees_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
@@ -287,8 +287,8 @@ class PRMC1Core
       @clock_count = 0
       @step += 1
       @step = 0 if @step == 4
-      @root_degrees_candidate.each_with_index { |n, idx| @root_degrees[idx] = n }
-      @arpeggio_intervals_candidate.each_with_index { |n, idx| @arpeggio_intervals[idx] = n }
+      @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
+      @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
       @number_of_step_division = @number_of_step_division_candidate
       set_step_status_bits(@step + 1)
     end
@@ -338,38 +338,38 @@ end
 
 loop do
   (0..7).each do |ch|
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     angle8.prepare_to_get_analog_input(ch)
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     analog_input = angle8.get_analog_input
 
     if current_inputs[ch].nil? ||
        analog_input > current_inputs[ch] + 1 ||
        analog_input < current_inputs[ch] - 1
       current_inputs[ch] = analog_input
-      prmc_1_core.on_parameter_changed(ch, 127 - current_inputs[ch] / 2)
+      prmc_1_core.change_parameter(ch, 127 - current_inputs[ch] / 2)
     end
   end
 
   begin
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     angle8.prepare_to_get_digital_input
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     digital_input = angle8.get_digital_input
 
     if current_inputs[8] != digital_input
       current_inputs[8] = digital_input
-      prmc_1_core.on_parameter_changed(8, current_inputs[8])
+      prmc_1_core.change_parameter(8, current_inputs[8])
     end
   end
 
   (0..3).each do |ch|
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     angle8.set_blue_led(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 
   (4..7).each do |ch|
-    prmc_1_core.process
+    prmc_1_core.process_sequencer
     angle8.set_green_led(ch, ((prmc_1_core.parameter_status_bits << 4) >> ch & 0x01) * LED_ON_VALUE)
   end
 end
