@@ -67,24 +67,6 @@ class M5UnitAngle8
     @i2c = i2c
   end
 
-  def set_led_color_red(ch, value)
-    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
-  rescue
-    retry
-  end
-
-  def set_led_color_green(ch, value)
-    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
-  rescue
-    retry
-  end
-
-  def set_led_color_blue(ch, value)
-    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
-  rescue
-    retry
-  end
-
   def prepare_to_get_analog_input(ch)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_ANALOG_INPUT_8B_REG + ch)
   rescue
@@ -105,6 +87,24 @@ class M5UnitAngle8
 
   def get_digital_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
+  rescue
+    retry
+  end
+
+  def set_red_led(ch, value)
+    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
+  rescue
+    retry
+  end
+
+  def set_green_led(ch, value)
+    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
+  rescue
+    retry
+  end
+
+  def set_blue_led(ch, value)
+    @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
   rescue
     retry
   end
@@ -365,11 +365,11 @@ loop do
 
   (0..3).each do |ch|
     prmc_1_core.process
-    angle8.set_led_color_blue(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_blue_led(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 
   (4..7).each do |ch|
     prmc_1_core.process
-    angle8.set_led_color_green(ch, ((prmc_1_core.parameter_status_bits << 4) >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_green_led(ch, ((prmc_1_core.parameter_status_bits << 4) >> ch & 0x01) * LED_ON_VALUE)
   end
 end
