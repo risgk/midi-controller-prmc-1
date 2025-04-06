@@ -63,7 +63,7 @@ class M5UnitAngle8
   ANGLE8_DIGITAL_INPUT_REG   = 0x20
   ANGLE8_RGB_24B_REG         = 0x30
 
-  def begin(i2c)
+  def initialize(i2c)
     @i2c = i2c
   end
 
@@ -113,7 +113,7 @@ end
 class MIDI
   # refs https://github.com/FortySevenEffects/arduino_midi_library
 
-  def begin(uart)
+  def initialize(uart)
     @uart = uart
   end
 
@@ -147,7 +147,9 @@ class MIDI
 end
 
 class PRMC1Core
-  def initialize
+  def initialize(midi, midi_channel)
+    @midi = midi
+    @midi_channel = midi_channel
     @bpm = 0
     @root_degrees = []
     @root_degrees_candidate = []
@@ -166,11 +168,6 @@ class PRMC1Core
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
-  end
-
-  def begin(midi, midi_channel)
-    @midi = midi
-    @midi_channel = midi_channel
   end
 
   def process
@@ -325,12 +322,10 @@ end
 
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20_000, sda_pin: 6, scl_pin: 7)
-angle8 = M5UnitAngle8.new
-angle8.begin(i2c1)
-midi = MIDI.new
-midi.begin(uart1)
-prmc_1_core = PRMC1Core.new
-prmc_1_core.begin(midi, MIDI_CHANNEL)
+angle8 = M5UnitAngle8.new(i2c1)
+midi = MIDI.new(uart1)
+prmc_1_core = PRMC1Core.new(midi, MIDI_CHANNEL)
+current_inputs = []
 
 if FOR_SAM2695
   midi.send_program_change(0x51, MIDI_CHANNEL)
@@ -338,8 +333,6 @@ if FOR_SAM2695
   midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
   midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
 end
-
-current_inputs = []
 
 # loop
 
