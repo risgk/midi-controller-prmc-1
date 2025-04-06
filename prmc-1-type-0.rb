@@ -116,19 +116,19 @@ class MIDI
   end
 
   def send_note_on(note_number, velocity, channel)
-    @uart.write((0x90 + (channel - 1)).chr + note_number.chr + velocity.chr)
+    @uart.write((0x90 + channel - 1).chr + note_number.chr + velocity.chr)
   end
 
   def send_note_off(note_number, velocity, channel)
-    @uart.write((0x80 + (channel - 1)).chr + note_number.chr + velocity.chr)
+    @uart.write((0x80 + channel - 1).chr + note_number.chr + velocity.chr)
   end
 
   def send_control_change(control_number, control_value, channel)
-    @uart.write((0xB0 + (channel - 1)).chr + control_number.chr + control_value.chr)
+    @uart.write((0xB0 + channel - 1).chr + control_number.chr + control_value.chr)
   end
 
   def send_program_change(program_number, channel)
-    @uart.write((0xC0 + (channel - 1)).chr + program_number.chr)
+    @uart.write((0xC0 + channel - 1).chr + program_number.chr)
   end
 
   def send_clock
@@ -188,7 +188,7 @@ class PRMC1Core
     case key
     when 0..3
       @root_degrees_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
-      set_parameter_status(((@root_degrees_candidate[key] - 1) % 7) + 1)
+      set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
     when 4
       arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
       case arpeggio_pattern
@@ -297,7 +297,7 @@ class PRMC1Core
     end
 
     if @clock % (CLOCKS_PER_STEP / @step_division) ==
-       (CLOCKS_PER_STEP * GATE_TIME) / 6 / @step_division % (CLOCKS_PER_STEP / @step_division)
+       CLOCKS_PER_STEP * GATE_TIME / 6 / @step_division % (CLOCKS_PER_STEP / @step_division)
       @midi.send_note_off(playing_note_old, NOTE_OFF_VELOCITY, @midi_channel) if playing_note_old != -1
     end
   end
