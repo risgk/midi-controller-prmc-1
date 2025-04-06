@@ -280,11 +280,7 @@ class PRMC1Core
       @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
       @step_division = @step_division_candidate
       @step += 1
-
-      if @step == NUMBER_OF_STEPS
-        @step = 0 
-      end
-
+      @step = 0 if @step == NUMBER_OF_STEPS
       set_step_status(@step + 1)
     end
 
