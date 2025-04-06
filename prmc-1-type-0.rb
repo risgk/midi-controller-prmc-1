@@ -55,9 +55,8 @@ NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
 FOR_SAM2695 = true
 
+# refs https://github.com/m5stack/M5Unit-8Angle
 class M5UnitAngle8
-  # refs https://github.com/m5stack/M5Unit-8Angle
-
   ANGLE8_I2C_ADDR            = 0x43
   ANGLE8_ANALOG_INPUT_8B_REG = 0x10
   ANGLE8_DIGITAL_INPUT_REG   = 0x20
@@ -110,9 +109,8 @@ class M5UnitAngle8
   end
 end
 
+# refs https://github.com/FortySevenEffects/arduino_midi_library
 class MIDI
-  # refs https://github.com/FortySevenEffects/arduino_midi_library
-
   def initialize(uart:)
     @uart = uart
   end
@@ -147,7 +145,8 @@ class MIDI
 end
 
 class PRMC1Core
-  CLOCK_COUNT_PER_STEP = 96
+  NUMBER_OF_STEPS           = 4
+  NUMBER_OF_CLOCKS_PER_STEP = 96
 
   def initialize(midi:, midi_channel:)
     @midi = midi
@@ -165,7 +164,7 @@ class PRMC1Core
     @playing = false
     @playing_note = -1
     @step = 0
-    @clock_count = 0
+    @clock = 0
     @usec = 0
     @usec_remain = 0
     @step_status_bits = 0x0
@@ -178,7 +177,6 @@ class PRMC1Core
       @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
       @usec = usec
       usec_per_clock = 2_500_000 / @bpm
-
       while @usec_remain >= usec_per_clock
         @usec_remain -= usec_per_clock
         receive_midi_clock
@@ -193,7 +191,6 @@ class PRMC1Core
       set_parameter_status(((@root_degrees_candidate[key] - 1) % 7) + 1)
     when 4
       arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
-
       case arpeggio_pattern
       when 1
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
@@ -214,29 +211,24 @@ class PRMC1Core
         @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
         @step_division_candidate = 8
       end
-
       set_parameter_status(arpeggio_pattern)
     when 5
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
-
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x20, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 6
       # filter resonance
       @midi.send_control_change(0x47, value, @midi_channel)
-
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x21, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
-
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 7
       @bpm = value * 2 - 8
@@ -248,18 +240,14 @@ class PRMC1Core
         @midi.send_start
         @playing = true
         @playing_note = -1
-        @step = 3
-        @clock_count = 95
+        @step = NUMBER_OF_STEPS - 1
+        @clock = NUMBER_OF_CLOCKS_PER_STEP - 1
         @usec = Time.now.usec
         @usec_remain = 0
       else
         @midi.send_stop
         @playing = false
-
-        if @playing_note != -1
-          @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
-        end
-
+        @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)
       end
     end
@@ -277,40 +265,30 @@ class PRMC1Core
 
   def receive_midi_clock
     @midi.send_clock
-    @clock_count += 1
-
-    if @clock_count == CLOCK_COUNT_PER_STEP
-      @clock_count = 0
+    @clock += 1
+    if @clock == NUMBER_OF_CLOCKS_PER_STEP
+      @clock = 0
       @step += 1
-      @step = 0 if @step == 4
-      @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
-      @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
-      @step_division = @step_division_candidate
+      if @step == NUMBER_OF_STEPS
+        @step = 0 
+        @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
+        @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
+        @step_division = @step_division_candidate
+      end
       set_step_status(@step + 1)
     end
 
-    if @clock_count % (CLOCK_COUNT_PER_STEP / @step_division) ==
-       (CLOCK_COUNT_PER_STEP * GATE_TIME) / 6 / @step_division
-      if @playing_note != -1
-        @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel)
-      end
+    if @clock % (NUMBER_OF_CLOCKS_PER_STEP / @step_division) ==
+       (NUMBER_OF_CLOCKS_PER_STEP * GATE_TIME) / 6 / @step_division
+      @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
     end
 
-    if @clock_count % (CLOCK_COUNT_PER_STEP / @step_division) == 0
+    if @clock % (NUMBER_OF_CLOCKS_PER_STEP / @step_division) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@clock_count / (CLOCK_COUNT_PER_STEP / @step_division)]
-
-      if root > 0 && interval > 0
-        note_index = root + interval - 1
-        @playing_note = @scale_notes[note_index]
-      else
-        @playing_note = -1
-      end
-
-      if @playing_note != -1
-        @playing_note += TRANSPOSE
-        @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel)
-      end
+      interval = @arpeggio_intervals[@clock / (NUMBER_OF_CLOCKS_PER_STEP / @step_division)]
+      @playing_note = -1
+      @playing_note = @scale_notes[root + interval - 1] + TRANSPOSE if root > 0 && interval > 0
+      @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if @playing_note != -1
     end
   end
 
@@ -347,7 +325,6 @@ loop do
     angle8.prepare_to_get_analog_input(ch)
     prmc_1_core.process_sequencer
     analog_input = angle8.get_analog_input
-
     if current_inputs[ch].nil? ||
        analog_input > current_inputs[ch] + 1 ||
        analog_input < current_inputs[ch] - 1
@@ -356,16 +333,13 @@ loop do
     end
   end
 
-  begin
-    prmc_1_core.process_sequencer
-    angle8.prepare_to_get_digital_input
-    prmc_1_core.process_sequencer
-    digital_input = angle8.get_digital_input
-
-    if current_inputs[8] != digital_input
-      current_inputs[8] = digital_input
-      prmc_1_core.change_parameter(8, current_inputs[8])
-    end
+  prmc_1_core.process_sequencer
+  angle8.prepare_to_get_digital_input
+  prmc_1_core.process_sequencer
+  digital_input = angle8.get_digital_input
+  if current_inputs[8] != digital_input
+    current_inputs[8] = digital_input
+    prmc_1_core.change_parameter(8, current_inputs[8])
   end
 
   (0..3).each do |ch|
