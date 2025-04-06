@@ -276,13 +276,13 @@ class PRMC1Core
     @clock += 1
     if @clock == CLOCKS_PER_STEP
       @clock = 0
+      @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
+      @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
+      @step_division = @step_division_candidate
       @step += 1
 
       if @step == NUMBER_OF_STEPS
         @step = 0 
-        @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
-        @arpeggio_intervals_candidate.each_with_index { |item, index| @arpeggio_intervals[index] = item }
-        @step_division = @step_division_candidate
       end
 
       set_step_status(@step + 1)
