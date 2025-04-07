@@ -274,6 +274,7 @@ class PRMC1Core
   def receive_midi_clock
     @midi.send_clock
     @clock += 1
+
     if @clock == CLOCKS_PER_STEP
       @clock = 0
       @root_degrees_candidate.each_with_index { |item, index| @root_degrees[index] = item }
