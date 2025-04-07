@@ -193,8 +193,8 @@ class PRMC1Core
       set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
     when 4
       arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
-      case arpeggio_pattern
 
+      case arpeggio_pattern
       when 1
         @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
         @step_division_candidate = 8
