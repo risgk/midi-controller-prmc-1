@@ -361,6 +361,6 @@ loop do
 
   (4..7).each do |ch|
     prmc_1_core.process_sequencer
-    angle8.set_green_led(ch, ((prmc_1_core.parameter_status_bits << 4) >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_green_led(ch, (prmc_1_core.parameter_status_bits << 4 >> ch & 0x01) * LED_ON_VALUE)
   end
 end
