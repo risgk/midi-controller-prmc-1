@@ -43,8 +43,8 @@ MIDI Controller PRMC-1 (type-0) by ISGK Instruments (Ryo Ishigaki) is marked wit
 To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
 =end
 
-require 'uart'
 require 'i2c'
+require 'uart'
 
 # options
 MIDI_CHANNEL = 1
@@ -311,9 +311,9 @@ end
 
 # setup
 
-uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20_000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
+uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31250)
 midi = MIDI.new(uart: uart1)
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: MIDI_CHANNEL)
 current_inputs = []
