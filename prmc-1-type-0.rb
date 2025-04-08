@@ -57,7 +57,6 @@ FOR_SAM2695 = true
 
 class M5UnitAngle8
   # refs https://github.com/m5stack/M5Unit-8Angle
-
   ANGLE8_I2C_ADDR            = 0x43
   ANGLE8_ANALOG_INPUT_8B_REG = 0x10
   ANGLE8_DIGITAL_INPUT_REG   = 0x20
@@ -112,7 +111,6 @@ end
 
 class MIDI
   # refs https://github.com/FortySevenEffects/arduino_midi_library
-
   def initialize(uart:)
     @uart = uart
   end
@@ -311,7 +309,6 @@ class PRMC1Core
 end
 
 # setup
-
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 20_000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
@@ -327,7 +324,6 @@ if FOR_SAM2695
 end
 
 # loop
-
 loop do
   (0..7).each do |ch|
     prmc_1_core.process_sequencer
