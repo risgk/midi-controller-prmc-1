@@ -31,8 +31,8 @@ Usage
     - Pattern 4: 7th Chord, Up & Down, 8th Note
     - Pattern 5: Root + 4th + 5th, Up, 8th Note
     - Pattern 6: Root + 4th + 5th, Up & Down, 8th Note
-- CH6 Knob: Filter Cutoff (Brightness), 0 - 127
-- CH7 Knob: Filter Resonance (Harmonic Content), 0 - 127
+- CH6 Knob: Brightness (Filter Cutoff), 0 - 127
+- CH7 Knob: Harmonic Content (Filter Resonance), 0 - 127
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 
