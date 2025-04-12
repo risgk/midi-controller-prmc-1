@@ -17,7 +17,7 @@ Required Hardware
 - Raspberry Pi Pico https://www.raspberrypi.com/products/raspberry-pi-pico/
 - Grove Shield for Pi Pico https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/ (5V)
 - M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle (I2C1)
-- M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI (UART1)
+- M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI (Separate Mode, UART1)
 
 Usage
 -----
