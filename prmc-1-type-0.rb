@@ -2,7 +2,7 @@
 MIDI Controller PRMC-1 (type-0)
 ===============================
 
-**Version 0.1.1 (2025-04-16)**
+**Version 0.1.2 (2025-04-22)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -289,7 +289,7 @@ class PRMC1Core
 
     if @clock % (CLOCKS_PER_STEP / @step_division) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@clock / (CLOCKS_PER_STEP / @step_division)]
+      interval = @arpeggio_intervals[@clock / (CLOCKS_PER_STEP / @step_division) % @arpeggio_intervals.length]
       @playing_note = -1
       @playing_note = @scale_notes[root + interval - 1] + TRANSPOSE if root > 0 && interval > 0
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if @playing_note != -1
