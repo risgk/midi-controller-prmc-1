@@ -2,7 +2,7 @@
 MIDI Controller PRMC-1 (type-0)
 ===============================
 
-**Version 0.1.2 (2025-04-22)**
+**Version 0.2.0 (2025-04-26)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -38,6 +38,13 @@ Usage
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 
+Change History
+--------------
+- Version 0.2.0 (2025-04-26): Change to send clocks while not playing; Add SEND_START_STOP option
+- Version 0.1.2 (2025-04-22): Easier to modify for step division 16 (16th Note)
+- Version 0.1.1 (2025-04-16): Improve style
+- Version 0.1.0 (2025-04-13): Initial release (used in RubyKaigi 2025 LT)
+
 License
 -------
 
@@ -52,6 +59,7 @@ require 'uart'
 MIDI_CHANNEL = 1
 TRANSPOSE = 0
 GATE_TIME = 3  # min: 1, max: 6
+SEND_START_STOP = true
 NOTE_ON_VELOCITY = 100
 NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
@@ -153,7 +161,7 @@ class PRMC1Core
   def initialize(midi:, midi_channel:)
     @midi = midi
     @midi_channel = midi_channel
-    @bpm = 0
+    @bpm = 120
     @root_degrees = []
     @root_degrees_candidate = []
     @arpeggio_intervals = []
@@ -167,22 +175,20 @@ class PRMC1Core
     @playing_note = -1
     @step = 0
     @clock = 0
-    @usec = 0
+    @usec = Time.now.usec
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
   end
 
   def process_sequencer
-    if @playing
-      usec = Time.now.usec
-      @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
-      @usec = usec
-      usec_per_clock = 2_500_000 / @bpm
-      while @usec_remain >= usec_per_clock
-        @usec_remain -= usec_per_clock
-        receive_midi_clock
-      end
+    usec = Time.now.usec
+    @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
+    @usec = usec
+    usec_per_clock = 2_500_000 / @bpm
+    while @usec_remain >= usec_per_clock
+      @usec_remain -= usec_per_clock
+      receive_midi_clock
     end
   end
 
@@ -245,15 +251,13 @@ class PRMC1Core
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
-        @midi.send_start
+        @midi.send_start if SEND_START_STOP
         @playing = true
         @playing_note = -1
         @step = NUMBER_OF_STEPS - 1
         @clock = CLOCKS_PER_STEP - 1
-        @usec = Time.now.usec
-        @usec_remain = 0
       else
-        @midi.send_stop
+        @midi.send_stop if SEND_START_STOP
         @playing = false
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)
@@ -273,6 +277,7 @@ class PRMC1Core
 
   def receive_midi_clock
     @midi.send_clock
+    return if !@playing
     @clock += 1
 
     if @clock == CLOCKS_PER_STEP
@@ -318,7 +323,7 @@ angle8 = M5UnitAngle8.new(i2c: i2c1)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: MIDI_CHANNEL)
-current_inputs = []
+current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0]
 
 if FOR_SAM2695
   midi.send_program_change(0x51, MIDI_CHANNEL)
