@@ -52,6 +52,7 @@ require 'uart'
 MIDI_CHANNEL = 1
 TRANSPOSE = 0
 GATE_TIME = 3  # min: 1, max: 6
+SEND_START_STOP = true
 NOTE_ON_VELOCITY = 100
 NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
@@ -245,7 +246,7 @@ class PRMC1Core
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8
       if value > 0
-        @midi.send_start
+        @midi.send_start if SEND_START_STOP
         @playing = true
         @playing_note = -1
         @step = NUMBER_OF_STEPS - 1
@@ -253,7 +254,7 @@ class PRMC1Core
         @usec = Time.now.usec
         @usec_remain = 0
       else
-        @midi.send_stop
+        @midi.send_stop if SEND_START_STOP
         @playing = false
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)
