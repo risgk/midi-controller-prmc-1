@@ -154,7 +154,7 @@ class PRMC1Core
   def initialize(midi:, midi_channel:)
     @midi = midi
     @midi_channel = midi_channel
-    @bpm = 0
+    @bpm = 120
     @root_degrees = []
     @root_degrees_candidate = []
     @arpeggio_intervals = []
@@ -168,22 +168,20 @@ class PRMC1Core
     @playing_note = -1
     @step = 0
     @clock = 0
-    @usec = 0
+    @usec = Time.now.usec
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
   end
 
   def process_sequencer
-    if @playing
-      usec = Time.now.usec
-      @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
-      @usec = usec
-      usec_per_clock = 2_500_000 / @bpm
-      while @usec_remain >= usec_per_clock
-        @usec_remain -= usec_per_clock
-        receive_midi_clock
-      end
+    usec = Time.now.usec
+    @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
+    @usec = usec
+    usec_per_clock = 2_500_000 / @bpm
+    while @usec_remain >= usec_per_clock
+      @usec_remain -= usec_per_clock
+      receive_midi_clock
     end
   end
 
@@ -251,8 +249,6 @@ class PRMC1Core
         @playing_note = -1
         @step = NUMBER_OF_STEPS - 1
         @clock = CLOCKS_PER_STEP - 1
-        @usec = Time.now.usec
-        @usec_remain = 0
       else
         @midi.send_stop if SEND_START_STOP
         @playing = false
@@ -274,6 +270,7 @@ class PRMC1Core
 
   def receive_midi_clock
     @midi.send_clock
+    return if !@playing
     @clock += 1
 
     if @clock == CLOCKS_PER_STEP
@@ -319,7 +316,7 @@ angle8 = M5UnitAngle8.new(i2c: i2c1)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: MIDI_CHANNEL)
-current_inputs = []
+current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0]
 
 if FOR_SAM2695
   midi.send_program_change(0x51, MIDI_CHANNEL)
