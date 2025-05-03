@@ -11,6 +11,8 @@ PRMC-1 (type-0)
 - Required Software: R2P2 0.3.0
 - Required Hardware: Raspberry Pi Pico, Grove Shield for Pi Pico, M5Stack Unit 8Angle, M5Stack Unit MIDI
 
+![PRMC-1 (type-0)](./midi-controller-prmc-1-type-0.jpg)
+
 PRMC-1 (type-1)
 ---------------
 
