@@ -1,4 +1,5 @@
 require 'prmc-1-type-2-m5-unit-angle8'
+require 'prmc-1-type-2-m5-unit-dual-button'
 require 'prmc-1-type-2-midi'
 require 'i2c'
 require 'uart'
@@ -179,6 +180,7 @@ led_builtin = GPIO.new(25, GPIO::OUT)
 led_builtin.write(1)
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100_000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
+dual_button = M5UnitDualButton.new(gpio_button_a: 18, gpio_button_b: 19)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: MIDI_CHANNEL)

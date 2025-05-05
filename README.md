@@ -26,4 +26,4 @@ PRMC-1 (type-2)
 
 - Under development
 - Required Software: R2P2_PICO 0.4.1 (and mruby compiler 3.3.0)
-- Required Hardware: Raspberry Pi Pico, Grove Shield for Pi Pico, M5Stack Unit 8Angle, and M5Stack Unit MIDI
+- Required Hardware: Raspberry Pi Pico, Grove Shield for Pi Pico, M5Stack Unit 8Angle, M5Stack Unit Dual Button, and M5Stack Unit MIDI
