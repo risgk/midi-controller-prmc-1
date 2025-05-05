@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.0.2 (2025-05-05)**
+**Version 0.0.3 (2025-05-05)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -46,6 +46,7 @@ Usage
 Change History
 --------------
 
+- Version 0.0.3 (2025-05-05): Swap the contents of `prmc-1-type-2-m5-unit-angle8.rb` and `prmc-1-type-2-midi.rb`
 - Version 0.0.2 (2025-05-05): Add M5Stack Unit Dual Button
 - Version 0.0.1 (2025-05-05): Same features as PRMC-1 (type-1) 0.2.0
 
