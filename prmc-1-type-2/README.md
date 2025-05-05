@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.0.3 (2025-05-05)**
+**Version 0.0.4 (2025-05-06)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -10,9 +10,9 @@ Required Software
 
 - R2P2_PICO 0.4.1 https://github.com/picoruby/R2P2/releases/tag/0.4.1
 - mruby compiler 3.3.0 (mrubyコンパイラ3.3.0) https://www.s-itoc.jp/support/technical-support/mrubyc/mrubyc-download/
-    - Required when modifying `prmc-1-type-2-m5-unit-angle8.rb` or `prmc-1-type-2-midi.rb`
+    - Required when modifying `prmc-1-type-2-m5-unit-angle8.rb`, `prmc-1-type-2-m5-unit-dual-button.rb`, or `prmc-1-type-2-midi.rb`
     - Run `mrbc prmc-1-type-2-m5-unit-angle8.rb` to get `prmc-1-type-2-m5-unit-angle8.mrb` on PC or Mac
-    - Same for `prmc-1-type-2-midi.mrb`
+    - Same for `prmc-1-type-2-m5-unit-dual-button.mrb` and `prmc-1-type-2-midi.mrb`
 
 Required Hardware
 -----------------
@@ -26,7 +26,7 @@ Required Hardware
 Usage
 -----
 
-- Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-m5-unit-angle8.mrb` and `prmc-1-type-2-midi.mrb` to `/lib`
+- Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-*.mrb` to `/lib`
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
 - CH2 Knob: Root of Step 2 Chord, ditto
 - CH3 Knob: Root of Step 3 Chord, ditto
@@ -46,6 +46,7 @@ Usage
 Change History
 --------------
 
+- Version 0.0.4 (2025-05-06): Fix README
 - Version 0.0.3 (2025-05-05): Swap the contents of `prmc-1-type-2-m5-unit-angle8.rb` and `prmc-1-type-2-midi.rb`
 - Version 0.0.2 (2025-05-05): Add M5Stack Unit Dual Button
 - Version 0.0.1 (2025-05-05): Same features as PRMC-1 (type-1) 0.2.0
