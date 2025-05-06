@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.0.4 (2025-05-06)**
+**Version 0.0.* (2025-05-06)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -38,14 +38,14 @@ Usage
     - Pattern 4: 7th Chord, Up & Down, 8th Note
     - Pattern 5: Root + 4th + 5th, Up, 8th Note
     - Pattern 6: Root + 4th + 5th, Up & Down, 8th Note
-- CH6 Knob: Brightness (Cutoff), 0 - 127
-- CH7 Knob: Harmonic Content (Resonance), 0 - 127
+- CH7 Knob: Brightness (Cutoff), 0 - 127
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 
 Change History
 --------------
 
+- Version 0.0.* (2025-05-06): TODO
 - Version 0.0.4 (2025-05-06): Fix README
 - Version 0.0.3 (2025-05-05): Swap the contents of `prmc-1-type-2-m5-unit-angle8.rb` and `prmc-1-type-2-midi.rb`
 - Version 0.0.2 (2025-05-05): Add M5Stack Unit Dual Button

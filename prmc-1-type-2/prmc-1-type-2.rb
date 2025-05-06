@@ -83,23 +83,14 @@ class PRMC1Core
 
       set_parameter_status(arpeggio_pattern)
     when 5
+      set_parameter_status(0)
+    when 6
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
 
       if FOR_SAM2695
         @midi.send_control_change(0x63, 0x01, @midi_channel)
         @midi.send_control_change(0x62, 0x20, @midi_channel)
-        @midi.send_control_change(0x06, value, @midi_channel)
-      end
-
-      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
-    when 6
-      # filter resonance
-      @midi.send_control_change(0x47, value, @midi_channel)
-
-      if FOR_SAM2695
-        @midi.send_control_change(0x63, 0x01, @midi_channel)
-        @midi.send_control_change(0x62, 0x21, @midi_channel)
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
@@ -171,7 +162,7 @@ class PRMC1Core
   end
 
   def set_parameter_status(value)
-    @parameter_status_bits = [0x0, 0x1, 0x3, 0x2, 0x6, 0x4, 0xC, 0x8].at(value)
+    @parameter_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80].at(value)
   end
 end
 
@@ -188,6 +179,13 @@ current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0]
 
 if FOR_SAM2695
   midi.send_program_change(0x51, MIDI_CHANNEL)
+
+  # filter resonance
+  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
+  midi.send_control_change(0x62, 0x21, MIDI_CHANNEL)
+  midi.send_control_change(0x06, 0x7F, MIDI_CHANNEL)
+
+  # envelope release time
   midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
   midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
   midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
@@ -226,8 +224,8 @@ loop do
     angle8.set_blue_led(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 
-  (4..7).each do |ch|
+  (0..7).each do |ch|
     prmc_1_core.process_sequencer
-    angle8.set_green_led(ch, (prmc_1_core.parameter_status_bits << 4 >> ch & 0x01) * LED_ON_VALUE)
+    angle8.set_green_led(ch, (prmc_1_core.parameter_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 end
