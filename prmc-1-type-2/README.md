@@ -10,9 +10,9 @@ Required Software
 
 - R2P2_PICO 0.4.1 https://github.com/picoruby/R2P2/releases/tag/0.4.1
 - mruby compiler 3.3.0 (mrubyコンパイラ3.3.0) https://www.s-itoc.jp/support/technical-support/mrubyc/mrubyc-download/
-    - Required when modifying `prmc-1-type-2-m5-unit-angle8.rb`, `prmc-1-type-2-m5-unit-dual-button.rb`, or `prmc-1-type-2-midi.rb`
+    - Required when modifying `prmc-1-type-2-m5-unit-angle8.rb`, `prmc-1-type-2-m5-unit-dual-button.rb`, `prmc-1-type-2-midi.rb`, or `prmc-1-type-2-core.rb`
     - Run `mrbc prmc-1-type-2-m5-unit-angle8.rb` to get `prmc-1-type-2-m5-unit-angle8.mrb` on PC or Mac
-    - Same for `prmc-1-type-2-m5-unit-dual-button.mrb` and `prmc-1-type-2-midi.mrb`
+    - Same for `prmc-1-type-2-m5-unit-dual-button.mrb`, `prmc-1-type-2-midi.mrb`, and `prmc-1-type-2-core.mrb`
 
 Required Hardware
 -----------------
@@ -27,6 +27,8 @@ Usage
 -----
 
 - Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-*.mrb` to `/lib`
+- MIDI Channel: 1
+    - Alternatively, 9 is used when the red button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
 - CH2 Knob: Root of Step 2 Chord, ditto
 - CH3 Knob: Root of Step 3 Chord, ditto
@@ -45,6 +47,8 @@ Usage
 - CH7 Knob: Brightness (Cutoff), 0 - 127
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
+- Blue Button: Transpose - (min: -12)
+- Red Button: Transpose + (max: +12)
 
 Change History
 --------------
