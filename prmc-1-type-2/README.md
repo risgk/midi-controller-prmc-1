@@ -53,7 +53,7 @@ Usage
 Change History
 --------------
 
-- Version 0.*.0 (2025-05-06): Expand BPM range; Smooth Cutoff changes
+- Version 0.*.0 (2025-05-06): Improve LED display; Expand BPM range; Smooth Cutoff changes
 - Version 0.1.0 (2025-05-06): Remove Resonance control; Use 8 green LEDs; Add Arpeggio Patterns, Sub-steps of On, Transpose by buttons, and MIDI_CHANNEL_ALT
 - Version 0.0.4 (2025-05-06): Fix README
 - Version 0.0.3 (2025-05-05): Swap the contents of `prmc-1-type-2-m5-unit-angle8.rb` and `prmc-1-type-2-midi.rb`

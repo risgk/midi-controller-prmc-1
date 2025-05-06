@@ -84,12 +84,12 @@ class PRMC1Core
         @midi.send_control_change(0x06, value, @midi_channel)
       end
 
-      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status_with_center_mark(value)
     when 7
       @bpm = value * 2 - 8
       @bpm = 30 if @bpm < 30
       @bpm = 240 if @bpm > 240
-      set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
+      set_parameter_status_with_center_mark(value)
     when 8
       if value > 0
         @midi.send_start if SEND_START_STOP
@@ -163,6 +163,11 @@ class PRMC1Core
 
   def set_parameter_status(value)
     @parameter_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80].at(value)
+  end
+
+  def set_parameter_status_with_center_mark(value)
+    set_parameter_status((value * (8 - 1) * 2 + 127) / 254 + 1)
+    @parameter_status_bits = 0x18 if value == 64
   end
 
   def set_parameter_status_for_transpose(value)
