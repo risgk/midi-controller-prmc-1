@@ -6,6 +6,7 @@ require 'uart'
 
 # options
 MIDI_CHANNEL = 1
+MIDI_CHANNEL_ALT = 9  # used when the red button is pressed at the app startup
 TRANSPOSE = 0
 GATE_TIME = 3  # min: 1, max: 6
 SEND_START_STOP = true
@@ -181,21 +182,23 @@ angle8 = M5UnitAngle8.new(i2c: i2c1)
 dual_button = M5UnitDualButton.new(gpio_button_a: 18, gpio_button_b: 19)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
-prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: MIDI_CHANNEL)
+midi_channel = MIDI_CHANNEL
+midi_channel = MIDI_CHANNEL_ALT if dual_button.get_red_button_input == 1
+prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel)
 current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0]
 
 if FOR_SAM2695
-  midi.send_program_change(0x51, MIDI_CHANNEL)
+  midi.send_program_change(0x51, midi_channel)
 
   # filter resonance
-  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
-  midi.send_control_change(0x62, 0x21, MIDI_CHANNEL)
-  midi.send_control_change(0x06, 0x7F, MIDI_CHANNEL)
+  midi.send_control_change(0x63, 0x01, midi_channel)
+  midi.send_control_change(0x62, 0x21, midi_channel)
+  midi.send_control_change(0x06, 0x7F, midi_channel)
 
   # envelope release time
-  midi.send_control_change(0x63, 0x01, MIDI_CHANNEL)
-  midi.send_control_change(0x62, 0x66, MIDI_CHANNEL)
-  midi.send_control_change(0x06, 0x60, MIDI_CHANNEL)
+  midi.send_control_change(0x63, 0x01, midi_channel)
+  midi.send_control_change(0x62, 0x66, midi_channel)
+  midi.send_control_change(0x06, 0x60, midi_channel)
 end
 
 # loop
