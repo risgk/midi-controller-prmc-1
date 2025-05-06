@@ -51,7 +51,7 @@ loop do
   blue_button_input = 0
   red_button_input = 0
 
-  (0..7).each do |ch|
+  [6, 0, 1, 2, 3, 4, 5, 6, 7].each do |ch|
     prmc_1_core.process_sequencer
     angle8.prepare_to_get_analog_input(ch)
     prmc_1_core.process_sequencer
