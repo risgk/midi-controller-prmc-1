@@ -5,9 +5,9 @@ require 'uart'
 # options
 MIDI_CHANNEL = 1
 MIDI_CHANNEL_ALT = 9  # used when the red button is pressed at the app startup
+SEND_START_STOP = false  # inverted when the blue button is pressed at the app startup
 TRANSPOSE = 0  # min: -12, max: +12
 GATE_TIME = 3  # min: 1, max: 6
-SEND_START_STOP = true
 NOTE_ON_VELOCITY = 100
 NOTE_OFF_VELOCITY = 64
 LED_ON_VALUE = 1
@@ -19,10 +19,14 @@ angle8 = M5UnitAngle8.new(i2c: i2c1)
 dual_button = M5UnitDualButton.new(gpio_blue_button: 18, gpio_red_button: 19)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
-midi_channel = MIDI_CHANNEL
-midi_channel = MIDI_CHANNEL_ALT if dual_button.get_red_button_input == 1
-prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel)
 current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0]
+current_inputs[9] = dual_button.get_blue_button_input
+current_inputs[10] = dual_button.get_red_button_input
+midi_channel = MIDI_CHANNEL
+midi_channel = MIDI_CHANNEL_ALT if current_inputs[10] == 1
+send_start_stop = SEND_START_STOP
+send_start_stop = !send_start_stop if current_inputs[9] == 1
+prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel, send_start_stop: send_start_stop)
 
 if FOR_SAM2695
   midi.send_program_change(0x51, midi_channel)
