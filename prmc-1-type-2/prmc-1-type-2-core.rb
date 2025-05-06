@@ -87,7 +87,7 @@ class PRMC1Core
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 7
       @bpm = value * 2 - 8
-      @bpm = 60 if @bpm < 60
+      @bpm = 30 if @bpm < 30
       @bpm = 240 if @bpm > 240
       set_parameter_status((value * (7 - 1) * 2 + 127) / 254 + 1)
     when 8

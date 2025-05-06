@@ -45,7 +45,7 @@ Usage
 - CH6 Knob: Sub-steps of On, 0 - 127
     - bit 0: Sub-step 2, ..., bit 6: Sub-step 8
 - CH7 Knob: Brightness (Cutoff), 0 - 127
-- CH8 Knob: BPM, 60 - 240
+- CH8 Knob: BPM, 30 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 - Blue Button: Transpose - (min: -12)
 - Red Button: Transpose + (max: +12)
@@ -53,7 +53,7 @@ Usage
 Change History
 --------------
 
-- Version 0.*.0 (2025-05-06): Smooth Cutoff changes
+- Version 0.*.0 (2025-05-06): Expand BPM range; Smooth Cutoff changes
 - Version 0.1.0 (2025-05-06): Remove Resonance control; Use 8 green LEDs; Add Arpeggio Patterns, Sub-steps of On, Transpose by buttons, and MIDI_CHANNEL_ALT
 - Version 0.0.4 (2025-05-06): Fix README
 - Version 0.0.3 (2025-05-05): Swap the contents of `prmc-1-type-2-m5-unit-angle8.rb` and `prmc-1-type-2-midi.rb`
