@@ -92,9 +92,10 @@ class PRMC1Core
   NUMBER_OF_STEPS = 4
   CLOCKS_PER_STEP = 96
 
-  def initialize(midi:, midi_channel:)
+  def initialize(midi:, midi_channel:, send_start_stop:)
     @midi = midi
     @midi_channel = midi_channel
+    @send_start_stop = send_start_stop
     @bpm = 120
     @root_degrees_candidate = []
     @root_degrees = []
@@ -186,13 +187,13 @@ class PRMC1Core
       set_parameter_status_with_center_mark(value)
     when 8
       if value > 0
-        @midi.send_start if SEND_START_STOP
+        @midi.send_start if @send_start_stop
         @playing = true
         @playing_note = -1
         @step = NUMBER_OF_STEPS - 1
         @clock = CLOCKS_PER_STEP - 1
       else
-        @midi.send_stop if SEND_START_STOP
+        @midi.send_stop if @send_start_stop
         @playing = false
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)

@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.2.1 (2025-05-06)**
+**Version 0.3.0 (2025-05-06)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -28,6 +28,8 @@ Usage
 - Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-lib.mrb` to `/lib`
 - MIDI Channel: 1
     - Alternatively, 9 is used when the red button is pressed at the app startup
+- Send Start/Stop: false
+    - Alternatively, true is used when the blue button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
 - CH2 Knob: Root of Step 2 Chord, ditto
 - CH3 Knob: Root of Step 3 Chord, ditto
@@ -54,6 +56,7 @@ Usage
 Change History
 --------------
 
+- Version 0.3.0 (2025-05-06): Do not send Start/Stop by default
 - Version 0.2.1 (2025-05-06): Combine the files for library
 - Version 0.2.0 (2025-05-06): Add Arpeggio Patterns; Improve LED display; Expand BPM range; Smooth Cutoff changes
 - Version 0.1.0 (2025-05-06): Remove Resonance control; Use 8 green LEDs; Add Arpeggio Patterns, Sub-steps of On, Transpose by buttons, and MIDI_CHANNEL_ALT
