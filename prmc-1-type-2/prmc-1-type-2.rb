@@ -1,7 +1,4 @@
-require 'prmc-1-type-2-m5-unit-angle8'
-require 'prmc-1-type-2-m5-unit-dual-button'
-require 'prmc-1-type-2-midi'
-require 'prmc-1-type-2-core'
+require 'prmc-1-type-2-lib'
 require 'i2c'
 require 'uart'
 

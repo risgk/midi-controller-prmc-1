@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.2.0 (2025-05-06)**
+**Version 0.2.1 (2025-05-06)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -10,9 +10,8 @@ Required Software
 
 - R2P2_PICO 0.4.1 https://github.com/picoruby/R2P2/releases/tag/0.4.1
 - mruby compiler 3.3.0 (mrubyコンパイラ3.3.0) https://www.s-itoc.jp/support/technical-support/mrubyc/mrubyc-download/
-    - Required when modifying `prmc-1-type-2-m5-unit-angle8.rb`, `prmc-1-type-2-m5-unit-dual-button.rb`, `prmc-1-type-2-midi.rb`, or `prmc-1-type-2-core.rb`
-    - Run `mrbc prmc-1-type-2-m5-unit-angle8.rb` to get `prmc-1-type-2-m5-unit-angle8.mrb` on PC or Mac
-    - Same for `prmc-1-type-2-m5-unit-dual-button.mrb`, `prmc-1-type-2-midi.mrb`, and `prmc-1-type-2-core.mrb`
+    - Required when modifying `mrbc prmc-1-type-2-lib.rb`
+    - Run `mrbc prmc-1-type-2-lib.rb` to get `prmc-1-type-2-lib.mrb` on PC or Mac
 
 Required Hardware
 -----------------
@@ -26,7 +25,7 @@ Required Hardware
 Usage
 -----
 
-- Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-*.mrb` to `/lib`
+- Before running `prmc-1-type-2.rb` on R2P2, copy `prmc-1-type-2-lib.mrb` to `/lib`
 - MIDI Channel: 1
     - Alternatively, 9 is used when the red button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
@@ -55,6 +54,7 @@ Usage
 Change History
 --------------
 
+- Version 0.2.1 (2025-05-06): Combine the files for library
 - Version 0.2.0 (2025-05-06): Add Arpeggio Patterns; Improve LED display; Expand BPM range; Smooth Cutoff changes
 - Version 0.1.0 (2025-05-06): Remove Resonance control; Use 8 green LEDs; Add Arpeggio Patterns, Sub-steps of On, Transpose by buttons, and MIDI_CHANNEL_ALT
 - Version 0.0.4 (2025-05-06): Fix README
