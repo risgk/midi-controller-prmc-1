@@ -40,6 +40,8 @@ Usage
     - Pattern 6, 12: Root + 4th + 5th, Up & Down
     - Pattern 1 - 6: 8th Note
     - Pattern 7 - 12: 16th Note
+- CH6 Knob: Sub-steps of On, 0 - 127
+    - bit 0: Sub-step 2, ..., bit 6: Sub-step 8
 - CH7 Knob: Brightness (Cutoff), 0 - 127
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer

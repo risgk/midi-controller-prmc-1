@@ -27,7 +27,9 @@ class PRMC1Core
     @arpeggio_intervals = []
     @arpeggio_intervals_candidate = []
     @step_division = 8
-    @step_division_candidate = 8
+    @step_division_candidate = @step_division
+    @sub_steps_of_on_bits = 0xFF
+    @sub_steps_of_on_bits_candidate = @sub_steps_of_on_bits
     @scale_notes = [-1, 48, 50, 52, 53, 55, 57, 59,
                         60, 62, 64, 65, 67, 69, 71,
                         72, 74, 76, 77, 79, 81, 83]
@@ -84,7 +86,8 @@ class PRMC1Core
 
       set_parameter_status((arpeggio_pattern - 1) % 6 + 1)
     when 5
-      set_parameter_status(0)
+      @sub_steps_of_on_bits_candidate = (value << 1) + 1
+      @parameter_status_bits = @sub_steps_of_on_bits_candidate
     when 6
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
@@ -137,6 +140,7 @@ class PRMC1Core
       @root_degrees_candidate.each_with_index {|item, index| @root_degrees[index] = item }
       @arpeggio_intervals_candidate.each_with_index {|item, index| @arpeggio_intervals[index] = item }
       @step_division = @step_division_candidate
+      @sub_steps_of_on_bits = @sub_steps_of_on_bits_candidate
       @step += 1
       @step = 0 if @step == NUMBER_OF_STEPS
       set_step_status(@step + 1)
@@ -146,9 +150,11 @@ class PRMC1Core
 
     if @clock % (CLOCKS_PER_STEP / @step_division) == 0
       root = @root_degrees[@step]
-      interval = @arpeggio_intervals[@clock / (CLOCKS_PER_STEP / @step_division) % @arpeggio_intervals.length]
+      sub_step = @clock / (CLOCKS_PER_STEP / @step_division)
+      interval = @arpeggio_intervals[sub_step % @arpeggio_intervals.length]
       @playing_note = -1
-      @playing_note = @scale_notes[root + interval - 1] + TRANSPOSE if root > 0 && interval > 0
+      @playing_note = @scale_notes[root + interval - 1] + TRANSPOSE if
+                      root > 0 && interval > 0 && ((1 << (sub_step % 8)) & @sub_steps_of_on_bits) > 0
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if @playing_note != -1
     end
 
