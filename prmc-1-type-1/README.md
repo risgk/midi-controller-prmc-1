@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-1)
 ===============================
 
-**Version 0.2.1 (2025-05-05)**
+**Version 0.2.2 (2025-05-06)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -31,10 +31,10 @@ Usage
 - CH3 Knob: Root of Step 3 Chord, ditto
 - CH4 Knob: Root of Step 4 Chord, ditto
 - CH5 Knob: Arpeggio Pattern, 1 - 6
-    - Pattern 1: Triad, Up, 8th Note
-    - Pattern 2: Triad, Up & Down, 8th Note
-    - Pattern 3: 7th Chord, Up, 8th Note
-    - Pattern 4: 7th Chord, Up & Down, 8th Note
+    - Pattern 1: 7th Chord, Up, 8th Note
+    - Pattern 2: 7th Chord, Up & Down, 8th Note
+    - Pattern 3: Triad, Up, 8th Note
+    - Pattern 4: Triad, Up & Down, 8th Note
     - Pattern 5: Root + 4th + 5th, Up, 8th Note
     - Pattern 6: Root + 4th + 5th, Up & Down, 8th Note
 - CH6 Knob: Brightness (Cutoff), 0 - 127
@@ -45,6 +45,7 @@ Usage
 Change History
 --------------
 
+- Version 0.2.2 (2025-05-06): Fix README
 - Version 0.2.1 (2025-05-05): Swap the contents of `prmc-1-type-1-m5-unit-angle8.rb` and `prmc-1-type-1-midi.rb`
 - Version 0.2.0 (2025-05-04): Split `prmc-1-type-1.rb` for ease of modification
 - Version 0.1.0 (2025-05-03): Same features as PRMC-1 (type-0) 0.2.1
