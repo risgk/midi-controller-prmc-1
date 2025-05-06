@@ -7,7 +7,7 @@ require 'uart'
 # options
 MIDI_CHANNEL = 1
 MIDI_CHANNEL_ALT = 9  # used when the red button is pressed at the app startup
-TRANSPOSE = 0
+TRANSPOSE = 0  # min: -12, max: +12
 GATE_TIME = 3  # min: 1, max: 6
 SEND_START_STOP = true
 NOTE_ON_VELOCITY = 100
@@ -23,14 +23,14 @@ class PRMC1Core
     @midi = midi
     @midi_channel = midi_channel
     @bpm = 120
-    @root_degrees = []
     @root_degrees_candidate = []
-    @arpeggio_intervals = []
+    @root_degrees = []
     @arpeggio_intervals_candidate = []
-    @step_division = 8
-    @step_division_candidate = @step_division
-    @sub_steps_of_on_bits = 0xFF
-    @sub_steps_of_on_bits_candidate = @sub_steps_of_on_bits
+    @arpeggio_intervals = []
+    @step_division_candidate = 8
+    @step_division = @step_division
+    @sub_steps_of_on_bits_candidate = 0xFF
+    @sub_steps_of_on_bits = @sub_steps_of_on_bits
     @scale_notes = [-1, 48, 50, 52, 53, 55, 57, 59,
                         60, 62, 64, 65, 67, 69, 71,
                         72, 74, 76, 77, 79, 81, 83]
@@ -42,6 +42,8 @@ class PRMC1Core
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
+    @transpose_candidate = TRANSPOSE
+    @transpose = @transpose_candidate
   end
 
   def process_sequencer
@@ -118,6 +120,12 @@ class PRMC1Core
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)
       end
+    when 9
+      @transpose_candidate -= 1 if @transpose_candidate > -12 && value == 1
+      set_parameter_status_for_transpose(@transpose_candidate)
+    when 10
+      @transpose_candidate += 1 if @transpose_candidate < +12 && value == 1
+      set_parameter_status_for_transpose(@transpose_candidate)
     end
   end
 
@@ -142,6 +150,7 @@ class PRMC1Core
       @arpeggio_intervals_candidate.each_with_index {|item, index| @arpeggio_intervals[index] = item }
       @step_division = @step_division_candidate
       @sub_steps_of_on_bits = @sub_steps_of_on_bits_candidate
+      @transpose = @transpose_candidate
       @step += 1
       @step = 0 if @step == NUMBER_OF_STEPS
       set_step_status(@step + 1)
@@ -154,7 +163,7 @@ class PRMC1Core
       sub_step = @clock / (CLOCKS_PER_STEP / @step_division)
       interval = @arpeggio_intervals[sub_step % @arpeggio_intervals.length]
       @playing_note = -1
-      @playing_note = @scale_notes[root + interval - 1] + TRANSPOSE if
+      @playing_note = @scale_notes[root + interval - 1] + @transpose if
                       root > 0 && interval > 0 && ((1 << (sub_step % 8)) & @sub_steps_of_on_bits) > 0
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if @playing_note != -1
     end
@@ -172,20 +181,22 @@ class PRMC1Core
   def set_parameter_status(value)
     @parameter_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80].at(value)
   end
+
+  def set_parameter_status_for_transpose(value)
+    @parameter_status_bits = [0x01, 0x03, 0x02, 0x06, 0x04, 0x08, 0x18, 0x10, 0x30, 0x20, 0x60, 0x40].at((value + 12) % 12)
+  end
 end
 
 # setup
-led_builtin = GPIO.new(25, GPIO::OUT)
-led_builtin.write(1)
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100_000, sda_pin: 6, scl_pin: 7)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
-dual_button = M5UnitDualButton.new(gpio_button_a: 18, gpio_button_b: 19)
+dual_button = M5UnitDualButton.new(gpio_blue_button: 18, gpio_red_button: 19)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
 midi_channel = MIDI_CHANNEL
 midi_channel = MIDI_CHANNEL_ALT if dual_button.get_red_button_input == 1
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel)
-current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0]
+current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0]
 
 if FOR_SAM2695
   midi.send_program_change(0x51, midi_channel)
@@ -201,8 +212,16 @@ if FOR_SAM2695
   midi.send_control_change(0x06, 0x60, midi_channel)
 end
 
+led_builtin = GPIO.new(25, GPIO::OUT)
+led_builtin.write(1)
+
 # loop
 loop do
+  analog_input = 0
+  digital_input = 0
+  blue_button_input = 0
+  red_button_input = 0
+
   (0..7).each do |ch|
     prmc_1_core.process_sequencer
     angle8.prepare_to_get_analog_input(ch)
@@ -226,6 +245,22 @@ loop do
     if current_inputs[8] != digital_input
       current_inputs[8] = digital_input
       prmc_1_core.change_parameter(8, current_inputs[8])
+    end
+  end
+
+  begin
+    blue_button_input = dual_button.get_blue_button_input
+
+    if current_inputs[9] != blue_button_input
+      current_inputs[9] = blue_button_input
+      prmc_1_core.change_parameter(9, current_inputs[9])
+    end
+
+    red_button_input = dual_button.get_red_button_input
+
+    if current_inputs[10] != red_button_input
+      current_inputs[10] = red_button_input
+      prmc_1_core.change_parameter(10, current_inputs[10])
     end
   end
 

@@ -1,7 +1,7 @@
 class M5UnitDualButton
-  def initialize(gpio_button_a:, gpio_button_b:)
-    @button_blue = GPIO.new(gpio_button_a, GPIO::IN)
-    @button_red = GPIO.new(gpio_button_b, GPIO::IN)
+  def initialize(gpio_blue_button:, gpio_red_button:)
+    @button_blue = GPIO.new(gpio_blue_button, GPIO::IN)
+    @button_red = GPIO.new(gpio_red_button, GPIO::IN)
   end
 
   def get_blue_button_input
