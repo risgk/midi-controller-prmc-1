@@ -1,5 +1,4 @@
-require 'prmc-1-type-1-m5-unit-angle8'
-require 'prmc-1-type-1-midi'
+require 'prmc-1-type-1-lib'
 require 'i2c'
 require 'uart'
 
