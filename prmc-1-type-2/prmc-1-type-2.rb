@@ -58,30 +58,31 @@ class PRMC1Core
       @root_degrees_candidate[key] = (value * (14 - 1) * 2 + 127) / 254 + 1
       set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
     when 4
-      arpeggio_pattern = (value * (6 - 1) * 2 + 127) / 254 + 1
+      arpeggio_pattern = (value * (12 - 1) * 2 + 127) / 254 + 1
 
       case arpeggio_pattern
-      when 1
-        @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7]
-        @step_division_candidate = 8
-      when 2
-        @arpeggio_intervals_candidate = [1, 3, 5, 7, 5, 3, 1, 3]
-        @step_division_candidate = 8
-      when 3
-        @arpeggio_intervals_candidate = [1, 3, 5, 1, 3, 5, 1, 3]
-        @step_division_candidate = 8
-      when 4
-        @arpeggio_intervals_candidate = [1, 3, 5, 3, 1, 3, 5, 3]
-        @step_division_candidate = 8
-      when 5
-        @arpeggio_intervals_candidate = [1, 4, 5, 1, 4, 5, 1, 4]
-        @step_division_candidate = 8
-      when 6
-        @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4]
-        @step_division_candidate = 8
+      when 1, 7
+        @arpeggio_intervals_candidate = [1, 3, 5, 7, 1, 3, 5, 7, 1, 3, 5, 7, 1, 3, 5, 7]
+      when 2, 8
+        @arpeggio_intervals_candidate = [1, 3, 5, 7, 5, 3, 1, 3, 5, 7, 5, 3, 1, 3, 5, 7]
+      when 3, 9
+        @arpeggio_intervals_candidate = [1, 3, 5, 1, 3, 5, 1, 3, 5, 1, 3, 5, 1, 3, 5, 1]
+      when 4, 10
+        @arpeggio_intervals_candidate = [1, 3, 5, 3, 1, 3, 5, 3, 1, 3, 5, 3, 1, 3, 5, 3]
+      when 5, 11
+        @arpeggio_intervals_candidate = [1, 4, 5, 1, 4, 5, 1, 4, 5, 1, 4, 5, 1, 4, 5, 1]
+      when 6, 12
+        @arpeggio_intervals_candidate = [1, 4, 5, 4, 1, 4, 5, 4, 1, 4, 5, 4, 1, 4, 5, 4]
       end
 
-      set_parameter_status(arpeggio_pattern)
+      case arpeggio_pattern
+      when 1..6
+        @step_division_candidate = 8
+      when 7..12
+        @step_division_candidate = 16
+      end
+
+      set_parameter_status((arpeggio_pattern - 1) % 6 + 1)
     when 5
       set_parameter_status(0)
     when 6

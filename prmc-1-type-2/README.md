@@ -31,13 +31,15 @@ Usage
 - CH2 Knob: Root of Step 2 Chord, ditto
 - CH3 Knob: Root of Step 3 Chord, ditto
 - CH4 Knob: Root of Step 4 Chord, ditto
-- CH5 Knob: Arpeggio Pattern, 1 - 6
-    - Pattern 1: Triad, Up, 8th Note
-    - Pattern 2: Triad, Up & Down, 8th Note
-    - Pattern 3: 7th Chord, Up, 8th Note
-    - Pattern 4: 7th Chord, Up & Down, 8th Note
-    - Pattern 5: Root + 4th + 5th, Up, 8th Note
-    - Pattern 6: Root + 4th + 5th, Up & Down, 8th Note
+- CH5 Knob: Arpeggio Pattern, 1 - 12
+    - Pattern 1, 7: Triad, Up
+    - Pattern 2, 8: Triad, Up & Down
+    - Pattern 3, 9: 7th Chord, Up
+    - Pattern 4, 10: 7th Chord, Up & Down
+    - Pattern 5, 11: Root + 4th + 5th, Up
+    - Pattern 6, 12: Root + 4th + 5th, Up & Down
+    - Pattern 1 - 6: 8th Note
+    - Pattern 7 - 12: 16th Note
 - CH7 Knob: Brightness (Cutoff), 0 - 127
 - CH8 Knob: BPM, 60 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
