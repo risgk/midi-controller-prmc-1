@@ -199,10 +199,10 @@ class PRMC1Core
         set_step_status(0)
       end
     when 9
-      @transpose_candidate -= 1 if @transpose_candidate > -12 && value == 1
+      @transpose_candidate -= 1 if @transpose_candidate > -24 && value == 1
       set_parameter_status_for_transpose(@transpose_candidate)
     when 10
-      @transpose_candidate += 1 if @transpose_candidate < +12 && value == 1
+      @transpose_candidate += 1 if @transpose_candidate < +24 && value == 1
       set_parameter_status_for_transpose(@transpose_candidate)
     end
   end

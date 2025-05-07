@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-2)
 ===============================
 
-**Version 0.3.0 (2025-05-06)**
+**Version 0.4.0 (2025-05-07)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -50,12 +50,13 @@ Usage
 - CH7 Knob: Brightness (Cutoff), 0 - 127
 - CH8 Knob: BPM, 30 - 240
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
-- Blue Button: Transpose - (min: -12)
-- Red Button: Transpose + (max: +12)
+- Blue Button: Transpose - (min: -24)
+- Red Button: Transpose + (max: +24)
 
 Change History
 --------------
 
+- Version 0.4.0 (2025-05-07): Expand Transpose range
 - Version 0.3.0 (2025-05-06): Do not send Start/Stop by default
 - Version 0.2.1 (2025-05-06): Combine the files for library
 - Version 0.2.0 (2025-05-06): Add Arpeggio Patterns; Improve LED display; Expand BPM range; Smooth Cutoff changes
