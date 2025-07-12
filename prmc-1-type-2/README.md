@@ -53,6 +53,9 @@ Usage
 - Blue Button: Transpose - (min: -24)
 - Red Button: Transpose + (max: +24)
 
+[MIDI Implementation Chart](/MIDI-Implementation-Chart.md)
+----------------------------------------------------------
+
 Change History
 --------------
 
