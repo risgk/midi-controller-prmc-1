@@ -90,6 +90,8 @@ loop do
     prmc_1_core.change_parameter(10, current_inputs[10])
   end
 
+  angle8.set_blue_led(7, 0) # workaround for CH1 blue LED flickering issue
+
   (0..3).each do |ch|
     prmc_1_core.process_sequencer
     angle8.set_blue_led(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)

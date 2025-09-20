@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-3)
 ===============================
 
-**Version 0.1.0 (2025-09-20)**
+**Version 0.1.2 (2025-09-21)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -61,6 +61,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.1.2 (2025-09-21): Add workaround for CH1 blue LED flickering issue
 - Version 0.1.1 (2025-09-20): Add "Known Issues" to the README
 - Version 0.1.0 (2025-09-20): Same features as PRMC-1 (type-2) 0.5.2
 
