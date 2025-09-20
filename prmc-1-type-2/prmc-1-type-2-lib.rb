@@ -11,30 +11,51 @@ class M5UnitAngle8
 
   def prepare_to_get_analog_input(ch)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_ANALOG_INPUT_8B_REG + ch)
+  rescue IOError => e
+    p e
+    retry
   end
 
   def get_analog_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
+  rescue IOError => e
+    p e
+    retry
   end
 
   def prepare_to_get_digital_input
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_DIGITAL_INPUT_REG)
+  rescue IOError => e
+    p e
+    retry
   end
 
   def get_digital_input
     @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
+  rescue IOError => e
+    p e
+    retry
   end
 
   def set_red_led(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 0, value)
+  rescue IOError => e
+    p e
+    retry
   end
 
   def set_green_led(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 1, value)
+  rescue IOError => e
+    p e
+    retry
   end
 
   def set_blue_led(ch, value)
     @i2c.write(ANGLE8_I2C_ADDR, ANGLE8_RGB_24B_REG + ch * 4 + 2, value)
+  rescue IOError => e
+    p e
+    retry
   end
 end
 

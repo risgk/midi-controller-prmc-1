@@ -14,7 +14,7 @@ LED_ON_VALUE = 1
 FOR_SAM2695 = true
 
 # setup
-i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100_000, sda_pin: 6, scl_pin: 7)
+i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 100_000, sda_pin: 6, scl_pin: 7, timeout: 2)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
 dual_button = M5UnitDualButton.new(gpio_blue_button: 18, gpio_red_button: 19)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
