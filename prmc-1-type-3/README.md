@@ -53,9 +53,15 @@ Usage
 [MIDI Implementation Chart](./MIDI-Implementation-Chart.md)
 ----------------------------------------------------------
 
+Known Issues
+------------
+
+- Calling methods such as `set_blue_led` sometimes result in an IOError (timeout)
+
 Change History
 --------------
 
+- Version 0.1.1 (2025-09-20): Add "Known Issues" to the README
 - Version 0.1.0 (2025-09-20): Same features as PRMC-1 (type-2) 0.5.2
 
 License
