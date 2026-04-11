@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-3)
 ===============================
 
-**Version 0.1.4 (2026-04-12)**
+**Version 0.2.0 (2026-04-12)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -25,7 +25,7 @@ Usage
 - Before running `prmc-1-type-3.rb` on R2P2, copy `prmc-1-type-3-lib.rb` to `/lib`
 - MIDI Channel: 1
     - Alternatively, 9 is used when the red button is pressed at the app startup
-- Send Start/Stop: false
+- Send and receive Start/Stop: false
     - Alternatively, true is used when the blue button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
 - CH2 Knob: Root of Step 2 Chord, ditto
@@ -46,6 +46,8 @@ Usage
     - bit 0: Sub-step 2 (and 10), ..., bit 6: Sub-step 8 (and 16)
 - CH7 Knob: Brightness (Cutoff), 0 - 127 (-64 - +63)
 - CH8 Knob: BPM, 56 - 300
+    - BPM setting is disabled when MIDI clock is received
+    - BPM setting is enabled by turning the knob
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 - Blue Button: Transpose - (min: -24)
 - Red Button: Transpose + (max: +24)
@@ -61,6 +63,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.2.0 (2026-04-12): Support for receiving MIDI Clock and Start/Stop commands
 - Version 0.1.4 (2026-04-12): Fix MIDI Implementation Chart (Clock Transmitted x -> o)
 - Version 0.1.3 (2025-09-21): Improve workaround for CH1 blue LED flickering issue
 - Version 0.1.2 (2025-09-21): Add workaround for CH1 blue LED flickering issue

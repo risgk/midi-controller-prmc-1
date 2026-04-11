@@ -5,7 +5,7 @@ require 'uart'
 # options
 MIDI_CHANNEL = 1
 MIDI_CHANNEL_ALT = 9  # used when the red button is pressed at the app startup
-SEND_START_STOP = false  # inverted when the blue button is pressed at the app startup
+SEND_RECV_START_STOP = false  # inverted when the blue button is pressed at the app startup
 TRANSPOSE = 0  # min: -12, max: +12
 GATE_TIME = 3  # min: 1, max: 6
 NOTE_ON_VELOCITY = 100
@@ -24,9 +24,9 @@ current_inputs[9] = dual_button.get_blue_button_input
 current_inputs[10] = dual_button.get_red_button_input
 midi_channel = MIDI_CHANNEL
 midi_channel = MIDI_CHANNEL_ALT if current_inputs[10] == 1
-send_start_stop = SEND_START_STOP
-send_start_stop = !send_start_stop if current_inputs[9] == 1
-prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel, send_start_stop: send_start_stop)
+send_recv_start_stop = SEND_RECV_START_STOP
+send_recv_start_stop = !send_recv_start_stop if current_inputs[9] == 1
+prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel, send_recv_start_stop: send_recv_start_stop)
 
 if FOR_SAM2695
   midi.send_program_change(0x51, midi_channel)
