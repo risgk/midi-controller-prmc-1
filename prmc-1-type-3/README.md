@@ -28,9 +28,9 @@ Usage
 - Send and receive Start/Stop: false
     - Alternatively, true is used when the blue button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 14 degree (C3 - B4 in C Major Scale)
-- CH2 Knob: Root of Step 2 Chord, ditto
-- CH3 Knob: Root of Step 3 Chord, ditto
-- CH4 Knob: Root of Step 4 Chord, ditto
+- CH2 Knob: Root of Step 2 Chord, Ditto
+- CH3 Knob: Root of Step 3 Chord, Ditto
+- CH4 Knob: Root of Step 4 Chord, Ditto
 - CH5 Knob: Arpeggio Pattern, 1 - 16
     - Pattern 1, 9:  7th Chord, Up
     - Pattern 2, 10: 7th Chord, Up & Down
@@ -42,8 +42,8 @@ Usage
     - Pattern 8, 16: Root + 4th + 5th + 7th, Up & Down
     - Pattern 1 - 8: 8th Note
     - Pattern 9 - 16: 16th Note
-- CH6 Knob: Sub-steps of On, 0 - 127
-    - bit 0: Sub-step 2 (and 10), ..., bit 6: Sub-step 8 (and 16)
+- CH6 Knob: Sub-Steps of On, 0 - 127
+    - bit 0: Sub-Step 2 (and 10), ..., bit 6: Sub-Step 8 (and 16)
 - CH7 Knob: Brightness (Cutoff), 0 - 127 (-64 - +63)
 - CH8 Knob: BPM, 56 - 300
     - BPM setting is disabled when MIDI clock is received
