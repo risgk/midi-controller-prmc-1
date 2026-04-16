@@ -1,6 +1,6 @@
 ```
-  [MIDI Controller]                                               Date: 2025-08-15                      
-  Model: PRMC-1 (type-2)          MIDI Implementation Chart       Version: 0.5.1                        
+  [MIDI Controller]                                               Date: 2026-04-12                      
+  Model: PRMC-1 (type-2)          MIDI Implementation Chart       Version: 0.5.3                        
 +-------------------------------+---------------+---------------+--------------------------------------+
 | Function...                   | Transmitted   | Recognized    | Remarks                              |
 +-------------------------------+---------------+---------------+--------------------------------------+
@@ -35,7 +35,7 @@
 | Common       : Song Sel       | x             | x             |                                      |
 |              : Tune           | x             | x             |                                      |
 +-------------------------------+---------------+---------------+--------------------------------------+
-| System       : Clock          | x             | x             |                                      |
+| System       : Clock          | o             | x             |                                      |
 | Real Time    : Commands       | o             | x             | Start/Stop only, See SEND_START_STOP |
 +-------------------------------+---------------+---------------+--------------------------------------+
 | Aux          : All Sound OFF  | x             | x             |                                      |

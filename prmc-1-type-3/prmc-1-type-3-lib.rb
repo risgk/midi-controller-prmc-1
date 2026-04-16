@@ -107,16 +107,21 @@ class MIDI
   def send_stop
     @uart.write(0xFC.chr)
   end
+
+  def receive_byte
+    c = @uart.read(1)
+    c.ord if c
+  end
 end
 
 class PRMC1Core
   NUMBER_OF_STEPS = 4
   CLOCKS_PER_STEP = 96
 
-  def initialize(midi:, midi_channel:, send_start_stop:)
+  def initialize(midi:, midi_channel:, send_recv_start_stop:)
     @midi = midi
     @midi_channel = midi_channel
-    @send_start_stop = send_start_stop
+    @send_recv_start_stop = send_recv_start_stop
     @bpm = 120
     @root_degrees_candidate = []
     @root_degrees = []
@@ -139,16 +144,30 @@ class PRMC1Core
     @parameter_status_bits = 0x0
     @transpose_candidate = TRANSPOSE
     @transpose = @transpose_candidate
+    @synced_to_ext_clock = false
   end
 
   def process_sequencer
+    byte = @midi.receive_byte
+    case byte
+    when 0xFA
+      change_parameter(8, 1) if @send_recv_start_stop
+    when 0xFC
+      change_parameter(8, 0) if @send_recv_start_stop
+    when 0xF8
+      @synced_to_ext_clock = true
+      on_midi_clock
+    end
+
+    return if @synced_to_ext_clock
+
     usec = Time.now.usec
     @usec_remain += (usec - @usec + 1_000_000) % 1_000_000
     @usec = usec
     usec_per_clock = 2_500_000 / @bpm
     while @usec_remain >= usec_per_clock
       @usec_remain -= usec_per_clock
-      receive_midi_clock
+      on_midi_clock
     end
   end
 
@@ -202,18 +221,19 @@ class PRMC1Core
 
       set_parameter_status_with_center_mark(value)
     when 7
+      @synced_to_ext_clock = false
       @bpm = value * 2 + 56
       @bpm = 300 if @bpm > 300
       set_parameter_status_with_quarter_mark(value)
     when 8
       if value > 0
-        @midi.send_start if @send_start_stop
+        @midi.send_start if @send_recv_start_stop
         @playing = true
         @playing_note = -1
         @step = NUMBER_OF_STEPS - 1
         @clock = CLOCKS_PER_STEP - 1
       else
-        @midi.send_stop if @send_start_stop
+        @midi.send_stop if @send_recv_start_stop
         @playing = false
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if @playing_note != -1
         set_step_status(0)
@@ -237,7 +257,7 @@ class PRMC1Core
 
   # private
 
-  def receive_midi_clock
+  def on_midi_clock
     @midi.send_clock
     return if !@playing
     @clock += 1
