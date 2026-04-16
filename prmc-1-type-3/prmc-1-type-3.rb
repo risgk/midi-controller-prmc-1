@@ -28,6 +28,8 @@ send_recv_start_stop = SEND_RECV_START_STOP
 send_recv_start_stop = !send_recv_start_stop if current_inputs[9] == 1
 prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel, send_recv_start_stop: send_recv_start_stop)
 
+current_program = 0
+
 if FOR_SAM2695
   midi.send_program_change(0x51, midi_channel)
 
@@ -88,6 +90,11 @@ loop do
   if current_inputs[10] != red_button_input
     current_inputs[10] = red_button_input
     prmc_1_core.change_parameter(10, current_inputs[10])
+
+    if red_button_input == 1 && blue_button_input == 1
+      current_program = (current_program + 1) & 0x07
+      midi.send_program_change(current_program, midi_channel)
+    end
   end
 
   # workaround for CH1 blue LED flickering issue

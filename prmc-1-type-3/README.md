@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-3)
 ===============================
 
-**Version 0.2.0 (2026-04-12)**
+**Version 0.3.0 (2026-04-17)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -51,6 +51,7 @@ Usage
 - SW Switch: 0 to Stop Sequencer, 1 to Start Sequencer
 - Blue Button: Transpose - (min: -24)
 - Red Button: Transpose + (max: +24)
+    - With the Blue Button pressed, press the Red Button to increment the program number from 0 to 7 (Program Change)
 
 [MIDI Implementation Chart](./MIDI-Implementation-Chart.md)
 ----------------------------------------------------------
@@ -63,6 +64,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.3.0 (2026-04-17): Add a program number increment function
 - Version 0.2.0 (2026-04-12): Support for receiving MIDI Clock and Start/Stop commands
 - Version 0.1.4 (2026-04-12): Fix MIDI Implementation Chart (Clock Transmitted x -> o)
 - Version 0.1.3 (2025-09-21): Improve workaround for CH1 blue LED flickering issue
