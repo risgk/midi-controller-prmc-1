@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-3)
 ===============================
 
-**Version 0.3.0 (2026-04-17)**
+**Version 0.4.0 (2026-04-18)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -22,7 +22,6 @@ Required Hardware
 Usage
 -----
 
-- Before running `prmc-1-type-3.rb` on R2P2, copy `prmc-1-type-3-lib.rb` to `/lib`
 - MIDI Channel: 1
     - Alternatively, 9 is used when the red button is pressed at the app startup
 - Send and receive Start/Stop: false
@@ -64,6 +63,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.4.0 (2026-04-18): Merge `prmc-1-type-3-lib.rb` into `prmc-1-type-3.rb`
 - Version 0.3.0 (2026-04-17): Add a program number increment function
 - Version 0.2.0 (2026-04-12): Support for receiving MIDI Clock and Start/Stop commands
 - Version 0.1.4 (2026-04-12): Fix MIDI Implementation Chart (Clock Transmitted x -> o)
