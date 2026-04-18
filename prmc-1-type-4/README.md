@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-4)
 ===============================
 
-**Version 0.1.0 (2026-04-18)**
+**Version 0.2.0 (2026-04-19)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -31,14 +31,16 @@ Usage
 - CH3 Knob: Root of Step 3 Chord, Ditto
 - CH4 Knob: Root of Step 4 Chord, Ditto
 - CH5 Knob: Arpeggio Pattern, 1 - 8
-    - Pattern 1: Root + 3rd + 5th + 7th, 16th Note, Up
-    - Pattern 2: Root + 3rd + 5th + 7th, 16th Note, Up & Down
-    - Pattern 3: Root + 5th + 7th + 10th, 16th Note, Up
-    - Pattern 4: Root + 5th + 7th + 10th, 16th Note, Up & Down
-    - Pattern 5: Root + 5th + 7th + 11th, 16th Note, Up
-    - Pattern 6: Root + 5th + 7th + 11th, 16th Note, Up & Down
-    - Pattern 7: Root + 4th + 5th + 7th, 16th Note, Up
-    - Pattern 8: Root + 4th + 5th + 7th, 16th Note, Up & Down
+    - Pattern 1, 9: Root + 3rd + 5th + 7th, Up
+    - Pattern 2, 10: Root + 3rd + 5th + 7th, Up & Down
+    - Pattern 3, 11: Root + 5th + 7th + 10th, Up
+    - Pattern 4, 12: Root + 5th + 7th + 10th, Up & Down
+    - Pattern 5, 13: Root + 5th + 7th + 11th, Up
+    - Pattern 6, 14: Root + 5th + 7th + 11th, Up & Down
+    - Pattern 7, 15: Root + 4th + 5th + 7th, Up
+    - Pattern 8, 16: Root + 4th + 5th + 7th, Up & Down
+    - Pattern 1 - 8: 8th Note
+    - Pattern 9 - 16: 16th Note
 - CH6 Knob: Sub-Steps of On, 0 - 127
     - bit 0: Sub-Step 2 (and 10), ..., bit 6: Sub-Step 8 (and 16)
 - CH7 Knob: Brightness (Cutoff), 0 - 127 (-64 - +63)
@@ -61,6 +63,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.2.0 (2026-04-19): Add 8th-note arpeggio patterns
 - Version 0.1.0 (2026-04-18): Initial release
 
 License

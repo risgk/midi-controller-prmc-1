@@ -1,6 +1,6 @@
 ```
-  [MIDI Controller]                                               Date: 2026-04-18                           
-  Model: PRMC-1 (type-4)          MIDI Implementation Chart       Version: 0.1.0                             
+  [MIDI Controller]                                               Date: 2026-04-19                           
+  Model: PRMC-1 (type-4)          MIDI Implementation Chart       Version: 0.2.0                             
 +-------------------------------+---------------+---------------+-------------------------------------------+
 | Function...                   | Transmitted   | Recognized    | Remarks                                   |
 +-------------------------------+---------------+---------------+-------------------------------------------+
