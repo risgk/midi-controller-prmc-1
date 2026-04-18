@@ -193,30 +193,35 @@ class PRMC1Core
       @root_degrees_candidate[key] = value / 8 + 1
       set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
     when 4
-      arpeggio_pattern = value / 16 + 1
+      arpeggio_pattern = value / 8 + 1
 
       case arpeggio_pattern
-      when 1
+      when 1, 9
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7]
-      when 2
+      when 2, 10
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  5,  3,  1,  3,  5,  7,  5,  3,  1,  3,  5,  7]
-      when 3
+      when 3, 11
         @arpeggio_intervals_candidate = [1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10]
-      when 4
+      when 4, 12
         @arpeggio_intervals_candidate = [1,  5,  7, 10,  7,  5,  1,  5,  7, 10,  7,  5,  1,  5,  7, 10]
-      when 5
+      when 5, 13
         @arpeggio_intervals_candidate = [1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11]
-      when 6
+      when 6, 14
         @arpeggio_intervals_candidate = [1,  5,  7, 11,  7,  5,  1,  5,  7, 11,  7,  5,  1,  5,  7, 11]
-      when 7
+      when 7, 15
         @arpeggio_intervals_candidate = [1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7]
-      when 8
+      when 8, 16
         @arpeggio_intervals_candidate = [1,  4,  5,  7,  5,  4,  1,  4,  5,  7,  5,  4,  1,  4,  5,  7]
       end
 
-      @step_division_candidate = 16
+      case arpeggio_pattern
+      when 1..8
+        @step_division_candidate = 8
+      when 9..16
+        @step_division_candidate = 16
+      end
 
-      set_parameter_status(arpeggio_pattern)
+      set_parameter_status((arpeggio_pattern - 1) % 8 + 1)
     when 5
       @sub_steps_of_on_bits_candidate = (value << 1) + 1
       @parameter_status_bits = @sub_steps_of_on_bits_candidate
