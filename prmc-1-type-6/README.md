@@ -25,7 +25,7 @@ Usage
 -----
 
 - MIDI Channel: 1
-    - Alternatively, 9 is used when the red button is pressed at the app startup
+    - Alternatively, 2 is used when the red button is pressed at the app startup
 - Send and receive Start/Stop: false
     - Alternatively, true is used when the blue button is pressed at the app startup
 - CH1 Knob: Root of Step 1 Chord, 1 - 16 degree (C3 - D5 in C Major Scale)
