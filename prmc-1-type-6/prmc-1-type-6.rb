@@ -5,7 +5,7 @@ require 'uart'
 MIDI_CHANNEL = 1
 MIDI_CHANNEL_ALT = 9  # used when the red button is pressed at the app startup
 SEND_RECV_START_STOP = false  # inverted when the blue button is pressed at the app startup
-TRANSPOSE = 0  # min: -12, max: +12
+TRANSPOSE = 0  # min: -24, max: +24
 GATE_TIME = 3  # min: 1, max: 6
 NOTE_ON_VELOCITY = 100
 NOTE_OFF_VELOCITY = 64

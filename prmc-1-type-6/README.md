@@ -30,7 +30,7 @@ Usage
 - CH2 Knob: Root of Step 2 Chord, Ditto
 - CH3 Knob: Root of Step 3 Chord, Ditto
 - CH4 Knob: Root of Step 4 Chord, Ditto
-- CH5 Knob: Arpeggio Pattern, 1 - 8
+- CH5 Knob: Arpeggio Pattern, 1 - 16
     - Pattern 1, 9: Root + 3rd + 5th + 7th, Up
     - Pattern 2, 10: Root + 3rd + 5th + 7th, Up & Down
     - Pattern 3, 11: Root + 5th + 7th + 10th, Up
