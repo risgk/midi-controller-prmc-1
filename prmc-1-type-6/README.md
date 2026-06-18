@@ -8,7 +8,8 @@ MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 Required Software
 -----------------
 
-- R2P2 PICO2_W 0.5.0 https://github.com/picoruby/R2P2/releases/tag/0.5.0
+- R2P2 PICORUBY 3.4.2 PICO2_W https://github.com/picoruby/picoruby/releases/3.4.2
+- R2P2 Web Terminal https://picoruby.org/terminal
 
 Required Hardware
 -----------------
@@ -16,6 +17,7 @@ Required Hardware
 - Raspberry Pi Pico 2 https://www.raspberrypi.com/products/raspberry-pi-pico-2/
 - Grove Shield for Pi Pico https://wiki.seeedstudio.com/Grove-Starter-Kit-for-Raspberry-Pi-Pico/ (5V)
 - M5Stack Unit 8Angle https://docs.m5stack.com/en/unit/8angle (I2C1)
+- M5Stack Unit ByteSwitch https://docs.m5stack.com/en/unit/Unit%20ByteSwitch (I2C1)
 - M5Stack Unit Dual Button https://docs.m5stack.com/en/unit/dual_button (D18)
 - M5Stack Unit MIDI https://docs.m5stack.com/en/unit/Unit-MIDI (Separate Mode, UART1)
 
