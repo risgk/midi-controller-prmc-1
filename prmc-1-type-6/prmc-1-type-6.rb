@@ -4,7 +4,7 @@ require 'uart'
 # options
 MIDI_CHANNEL = 1
 MIDI_CHANNEL_ALT = 2  # used when the red button is pressed at the app startup
-SEND_RECV_START_STOP = false  # inverted when the blue button is pressed at the app startup
+SEND_RECV_START_STOP = true  # inverted when the blue button is pressed at the app startup
 TRANSPOSE = 0  # min: -24, max: +24
 GATE_TIME = 3  # min: 1, max: 6
 NOTE_ON_VELOCITY = 100
@@ -85,6 +85,30 @@ class M5UnitDualButton
 
   def get_red_button_input
     @button_red.read == 1 ? 0 : 1
+  end
+end
+
+class M5UnitByteSwitch
+  # refs https://github.com/m5stack/M5Unit-ByteButton/tree/main/examples/unit-byteSwitch
+  BYTE_SWITCH_I2C_ADDR = 0x46
+  UNIT_BYTE_STATUS_REG = 0x00
+
+  def initialize(i2c:)
+    @i2c = i2c
+  end
+
+  def prepare_to_get_switch_status
+    @i2c.write(BYTE_SWITCH_I2C_ADDR, UNIT_BYTE_STATUS_REG)
+  rescue IOError => e
+    p e
+    retry
+  end
+
+  def get_switch_status
+    @i2c.read(BYTE_SWITCH_I2C_ADDR, 1).bytes[0]
+  rescue IOError => e
+    p e
+    retry
   end
 end
 
@@ -222,9 +246,6 @@ class PRMC1Core
       end
 
       set_parameter_status((arpeggio_pattern - 1) % 8 + 1)
-    when 5
-      @sub_steps_of_on_bits_candidate = (value << 1) + 1
-      @parameter_status_bits = @sub_steps_of_on_bits_candidate
     when 6
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
@@ -260,6 +281,9 @@ class PRMC1Core
     when 10
       @transpose_candidate += 1 if @transpose_candidate < +24 && value == 1
       set_parameter_status_for_transpose(@transpose_candidate)
+    when 11
+      @sub_steps_of_on_bits_candidate = value
+      @parameter_status_bits = @sub_steps_of_on_bits_candidate
     end
   end
 
@@ -335,9 +359,10 @@ end
 i2c1 = I2C.new(unit: :RP2040_I2C1, frequency: 400_000, sda_pin: 6, scl_pin: 7, timeout: 2)
 angle8 = M5UnitAngle8.new(i2c: i2c1)
 dual_button = M5UnitDualButton.new(gpio_blue_button: 18, gpio_red_button: 19)
+byte_switch = M5UnitByteSwitch.new(i2c: i2c1)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
 midi = MIDI.new(uart: uart1)
-current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0]
+current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0]
 current_inputs[9] = dual_button.get_blue_button_input
 current_inputs[10] = dual_button.get_red_button_input
 midi_channel = MIDI_CHANNEL
@@ -413,6 +438,16 @@ loop do
       current_program = (current_program + 1) & 0x07
       midi.send_program_change(current_program, midi_channel)
     end
+  end
+
+  prmc_1_core.process_sequencer
+  byte_switch.prepare_to_get_switch_status
+  prmc_1_core.process_sequencer
+  switch_status = ~byte_switch.get_switch_status
+
+  if current_inputs[11] != switch_status
+    current_inputs[11] = switch_status
+    prmc_1_core.change_parameter(11, current_inputs[11])
   end
 
   # workaround for CH1 blue LED flickering issue
