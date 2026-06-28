@@ -217,31 +217,47 @@ class PRMC1Core
       @root_degrees_candidate[key] = value / 8 + 1
       set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
     when 4
-      arpeggio_pattern = value / 8 + 1
+      arpeggio_pattern = value / 4 + 1
 
-      case arpeggio_pattern
-      when 1, 9
+      case (arpeggio_pattern - 1) % 16 + 1
+      when 1
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7]
-      when 2, 10
+      when 2
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  5,  3,  1,  3,  5,  7,  5,  3,  1,  3,  5,  7]
-      when 3, 11
-        @arpeggio_intervals_candidate = [1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10]
-      when 4, 12
-        @arpeggio_intervals_candidate = [1,  5,  7, 10,  7,  5,  1,  5,  7, 10,  7,  5,  1,  5,  7, 10]
-      when 5, 13
-        @arpeggio_intervals_candidate = [1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11]
-      when 6, 14
-        @arpeggio_intervals_candidate = [1,  5,  7, 11,  7,  5,  1,  5,  7, 11,  7,  5,  1,  5,  7, 11]
-      when 7, 15
+      when 3
+        @arpeggio_intervals_candidate = [1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1]
+      when 4
+        @arpeggio_intervals_candidate = [1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3]
+      when 5
+        @arpeggio_intervals_candidate = [1,  4,  5,  1,  4,  5,  1,  4,  5,  1,  4,  5,  1,  4,  5,  1]
+      when 6
+        @arpeggio_intervals_candidate = [1,  4,  5,  4,  1,  4,  5,  4,  1,  4,  5,  4,  1,  4,  5,  4]
+      when 7
         @arpeggio_intervals_candidate = [1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7]
-      when 8, 16
+      when 8
+        @arpeggio_intervals_candidate = [1,  4,  5,  7,  5,  4,  1,  4,  5,  7,  5,  4,  1,  4,  5,  7]
+      when 9
+        @arpeggio_intervals_candidate = [1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7]
+      when 10
+        @arpeggio_intervals_candidate = [1,  3,  5,  7,  5,  3,  1,  3,  5,  7,  5,  3,  1,  3,  5,  7]
+      when 11
+        @arpeggio_intervals_candidate = [1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10]
+      when 12
+        @arpeggio_intervals_candidate = [1,  5,  7, 10,  7,  5,  1,  5,  7, 10,  7,  5,  1,  5,  7, 10]
+      when 13
+        @arpeggio_intervals_candidate = [1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11,  1,  5,  7, 11]
+      when 14
+        @arpeggio_intervals_candidate = [1,  5,  7, 11,  7,  5,  1,  5,  7, 11,  7,  5,  1,  5,  7, 11]
+      when 15
+        @arpeggio_intervals_candidate = [1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7,  1,  4,  5,  7]
+      when 16
         @arpeggio_intervals_candidate = [1,  4,  5,  7,  5,  4,  1,  4,  5,  7,  5,  4,  1,  4,  5,  7]
       end
 
       case arpeggio_pattern
-      when 1..8
+      when 1..16
         @step_division_candidate = 8
-      when 9..16
+      when 17..32
         @step_division_candidate = 16
       end
 
