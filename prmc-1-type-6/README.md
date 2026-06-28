@@ -75,6 +75,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.2.0 (2026-06-28): Add arpeggio patterns; add "Diatonic Transpose"; change GATE_TIME
 - Version 0.1.0 (2026-06-21): Initial release
 
 License
