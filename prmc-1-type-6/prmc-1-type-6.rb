@@ -169,11 +169,12 @@ class PRMC1Core
     @step_division = @step_division
     @sub_steps_of_on_bits_candidate = 0xFF
     @sub_steps_of_on_bits = @sub_steps_of_on_bits
-    @scale_notes = [nil, 48, 50, 52, 53, 55, 57, 59,
-                         60, 62, 64, 65, 67, 69, 71,
-                         72, 74, 76, 77, 79, 81, 83,
-                         84, 86, 88, 89, 91, 93, 95,
-                         96, 98]
+    @scale_notes = [nil,  48,  50,  52,  53,  55,  57,  59,
+                          60,  62,  64,  65,  67,  69,  71,
+                          72,  74,  76,  77,  79,  81,  83,
+                          84,  86,  88,  89,  91,  93,  95,
+                          96,  98, 100, 101, 103, 105, 107,
+                         108, 110]
     @playing = false
     @playing_note = nil
     @step = 0
@@ -182,6 +183,8 @@ class PRMC1Core
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
+    @diatonic_transpose_candidate = 0
+    @diatonic_transpose = @diatonic_transpose_candidate
     @transpose_candidate = TRANSPOSE
     @transpose = @transpose_candidate
     @synced_to_ext_clock = false
@@ -262,6 +265,9 @@ class PRMC1Core
       end
 
       set_parameter_status((arpeggio_pattern - 1) % 8 + 1)
+    when 5
+      @diatonic_transpose_candidate = value / 16 + 1
+      set_parameter_status((@diatonic_transpose_candidate - 1) % 7 + 1)
     when 6
       # filter cutoff
       @midi.send_control_change(0x4A, value, @midi_channel)
@@ -324,6 +330,7 @@ class PRMC1Core
       @arpeggio_intervals_candidate.each_with_index {|item, index| @arpeggio_intervals[index] = item }
       @step_division = @step_division_candidate
       @sub_steps_of_on_bits = @sub_steps_of_on_bits_candidate
+      @diatonic_transpose = @diatonic_transpose_candidate
       @transpose = @transpose_candidate
       @step += 1
       @step = 0 if @step == NUMBER_OF_STEPS
@@ -337,8 +344,9 @@ class PRMC1Core
       sub_step = @clock / (CLOCKS_PER_STEP / @step_division)
       interval = @arpeggio_intervals[sub_step % @arpeggio_intervals.length]
       @playing_note = nil
-      @playing_note = @scale_notes[root + interval - 1] + @transpose if
+      @playing_note = @scale_notes[root + interval - 1 + @diatonic_transpose - 1] + @transpose if
                       !root.nil? && !interval.nil? && ((1 << (sub_step % 8)) & @sub_steps_of_on_bits) > 0
+      @playing_note = 127 if @playing_note > 127
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if !@playing_note.nil?
     end
 

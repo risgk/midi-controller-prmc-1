@@ -52,6 +52,7 @@ Usage
     - Pattern 16, 32: Root + 4th + 5th + 7th, Up & Down
     - Pattern 1 - 16: 8th Note
     - Pattern 17 - 32: 16th Note
+- CH6 Knob: Diatonic Transpose, 1 - 8
 - CH7 Knob: Brightness (Cutoff), 0 - 127 (-64 - +63)
 - CH8 Knob: BPM, 56 - 300
     - BPM setting is disabled when MIDI clock is received
