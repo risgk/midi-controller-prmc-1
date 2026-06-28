@@ -33,17 +33,26 @@ Usage
 - CH2 Knob: Root of Step 2 Chord, Ditto
 - CH3 Knob: Root of Step 3 Chord, Ditto
 - CH4 Knob: Root of Step 4 Chord, Ditto
-- CH5 Knob: Arpeggio Pattern, 1 - 16
-    - Pattern 1, 9: Root + 3rd + 5th + 7th, Up
-    - Pattern 2, 10: Root + 3rd + 5th + 7th, Up & Down
-    - Pattern 3, 11: Root + 5th + 7th + 10th, Up
-    - Pattern 4, 12: Root + 5th + 7th + 10th, Up & Down
-    - Pattern 5, 13: Root + 5th + 7th + 11th, Up
-    - Pattern 6, 14: Root + 5th + 7th + 11th, Up & Down
-    - Pattern 7, 15: Root + 4th + 5th + 7th, Up
-    - Pattern 8, 16: Root + 4th + 5th + 7th, Up & Down
-    - Pattern 1 - 8: 8th Note
-    - Pattern 9 - 16: 16th Note
+- CH5 Knob: Arpeggio Pattern, 1 - 32
+    - Pattern 1, 17: Root + 3rd + 5th + 7th, Up
+    - Pattern 2, 18: Root + 3rd + 5th + 7th, Up & Down
+    - Pattern 3, 19: Root + 3rd + 5th, Up
+    - Pattern 4, 20: Root + 3rd + 5th, Up & Down
+    - Pattern 5, 21: Root + 4th + 5th, Up
+    - Pattern 6, 22: Root + 4th + 5th, Up & Down
+    - Pattern 7, 23: Root + 4th + 5th + 7th, Up
+    - Pattern 8, 24: Root + 4th + 5th + 7th, Up & Down
+    - Pattern 9, 25:  Root + 3rd + 5th + 7th, Up
+    - Pattern 10, 26: Root + 3rd + 5th + 7th, Up & Down
+    - Pattern 11, 27: Root + 5th + 7th + 10th, Up
+    - Pattern 12, 28: Root + 5th + 7th + 10th, Up & Down
+    - Pattern 13, 29: Root + 5th + 7th + 11th, Up
+    - Pattern 14, 30: Root + 5th + 7th + 11th, Up & Down
+    - Pattern 15, 31: Root + 4th + 5th + 7th, Up
+    - Pattern 16, 32: Root + 4th + 5th + 7th, Up & Down
+    - Pattern 1 - 16: 8th Note
+    - Pattern 17 - 32: 16th Note
+- CH6 Knob: Diatonic Transpose, 1 - 8
 - CH7 Knob: Brightness (Cutoff), 0 - 127 (-64 - +63)
 - CH8 Knob: BPM, 56 - 300
     - BPM setting is disabled when MIDI clock is received
@@ -66,6 +75,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.2.0 (2026-06-28): Add arpeggio patterns; add "Diatonic Transpose"; change GATE_TIME
 - Version 0.1.0 (2026-06-21): Initial release
 
 License
