@@ -305,7 +305,10 @@ class PRMC1Core
       @transpose_candidate += 1 if @transpose_candidate < +24 && value == 1
       set_parameter_status_for_transpose(@transpose_candidate)
     when 11
-      @sub_steps_of_on_bits_candidate = value
+      reversed_value = ((value & 0xF0) >> 4) | ((value & 0x0F) << 4)
+      reversed_value = ((reversed_value & 0xCC) >> 2) | ((reversed_value & 0x33) << 2)
+      reversed_value = ((reversed_value & 0xAA) >> 1) | ((reversed_value & 0x55) << 1)
+      @sub_steps_of_on_bits_candidate = ~reversed_value & 0xFF
       @parameter_status_bits = @sub_steps_of_on_bits_candidate
     end
   end
