@@ -281,9 +281,10 @@ class PRMC1Core
       set_parameter_status_with_center_mark(value)
     when 7
       @synced_to_ext_clock = false
-      @bpm = value * 2 + 56
-      @bpm = 300 if @bpm > 300
-      set_parameter_status_with_quarter_mark(value)
+      @bpm = value * 2 - 8
+      @bpm = 240 if @bpm > 240
+      @bpm = 30 if @bpm < 30
+      set_parameter_status_with_center_mark(value)
     when 8
       if value > 0
         @midi.send_start if @send_recv_start_stop
@@ -304,7 +305,10 @@ class PRMC1Core
       @transpose_candidate += 1 if @transpose_candidate < +24 && value == 1
       set_parameter_status_for_transpose(@transpose_candidate)
     when 11
-      @sub_steps_of_on_bits_candidate = value
+      reversed_value = ((value & 0xF0) >> 4) | ((value & 0x0F) << 4)
+      reversed_value = ((reversed_value & 0xCC) >> 2) | ((reversed_value & 0x33) << 2)
+      reversed_value = ((reversed_value & 0xAA) >> 1) | ((reversed_value & 0x55) << 1)
+      @sub_steps_of_on_bits_candidate = ~reversed_value & 0xFF
       @parameter_status_bits = @sub_steps_of_on_bits_candidate
     end
   end
@@ -367,11 +371,6 @@ class PRMC1Core
   def set_parameter_status_with_center_mark(value)
     set_parameter_status(value / 16 + 1)
     @parameter_status_bits = 0x18 if value == 64
-  end
-
-  def set_parameter_status_with_quarter_mark(value)
-    set_parameter_status(value / 16 + 1)
-    @parameter_status_bits = 0x06 if value == 32
   end
 
   def set_parameter_status_for_transpose(value)
