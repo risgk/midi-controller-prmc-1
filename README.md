@@ -53,5 +53,6 @@ PRMC-1 (type-6)
 
 - Required Software: R2P2 PICORUBY 3.4.2 PICO2_W, R2P2 Web Terminal
 - Required Hardware: Raspberry Pi Pico 2, Grove Shield for Pi Pico, M5Stack Unit 8Angle, M5Stack Unit ByteSwitch, M5Stack Unit Dual Button, and M5Stack Unit MIDI
+    - Unlike the picture below, it is better to connect the ByteSwitch upside down
 
 ![PRMC-1 (type-0)](./midi-controller-prmc-1-type-6.jpg)
