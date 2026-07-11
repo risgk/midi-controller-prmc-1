@@ -363,6 +363,7 @@ class PRMC1Core
 
     if @clock % (CLOCKS_PER_STEP / @step_division) == 0
       root = @root_degrees[@step]
+      root = [1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12].at(root - 1) if @scale_is_pentatonic
       sub_step = @clock / (CLOCKS_PER_STEP / @step_division)
       interval = @arpeggio_intervals[sub_step % @arpeggio_intervals.length]
       @playing_note = nil

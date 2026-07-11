@@ -28,7 +28,7 @@ Usage
     - Alternatively, 2 is used when the red button is pressed at the app startup
 - Send and receive Start/Stop: true
     - Alternatively, false is used when the blue button is pressed at the app startup
-- CH1 Knob: Root of Step 1 Chord, 1 - 16 degree (C3 - D5 in C Major Scale,  C3 - C6 in C Pentatonic Scale)
+- CH1 Knob: Root of Step 1 Chord, 1 - 16 degree (C3 - D5 in C Major Scale)
 - CH2 Knob: Root of Step 2 Chord, Ditto
 - CH3 Knob: Root of Step 3 Chord, Ditto
 - CH4 Knob: Root of Step 4 Chord, Ditto
