@@ -193,7 +193,7 @@ class PRMC1Core
     @usec_remain = 0
     @step_status_bits = 0x0
     @parameter_status_bits = 0x0
-    @diatonic_transpose_candidate = 0
+    @diatonic_transpose_candidate = 1
     @diatonic_transpose = @diatonic_transpose_candidate
     @transpose_candidate = TRANSPOSE
     @transpose = @transpose_candidate
@@ -369,7 +369,9 @@ class PRMC1Core
       @playing_note = nil
       scale_notes = @scale_notes
       scale_notes = @scale_notes_pentatonic if @scale_is_pentatonic
-      @playing_note = scale_notes[root + interval - 1 + @diatonic_transpose - 1] + @transpose if
+      diatonic_transpose = @diatonic_transpose
+      diatonic_transpose = [1, 2, 3, 3, 4, 5, 6, 6].at(diatonic_transpose - 1) if @scale_is_pentatonic
+      @playing_note = scale_notes[root + interval - 1 + diatonic_transpose - 1] + @transpose if
                       !root.nil? && !interval.nil? && ((1 << (sub_step % 8)) & @sub_steps_of_on_bits) > 0
       @playing_note = 127 if @playing_note > 127
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if !@playing_note.nil?
