@@ -231,22 +231,30 @@ class PRMC1Core
       arpeggio_pattern = value / 4 + 1
 
       case (arpeggio_pattern - 1) % 16 + 1
-      when 1, 5
+      when 1
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7]
-      when 2, 6
+      when 2
         @arpeggio_intervals_candidate = [1,  3,  5,  7,  5,  3,  1,  3,  5,  7,  5,  3,  1,  3,  5,  7]
-      when 3, 7
+      when 3
         @arpeggio_intervals_candidate = [1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1]
-      when 4, 8
+      when 4
         @arpeggio_intervals_candidate = [1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3]
-      when 9
+      when 5
         @arpeggio_intervals_candidate = [1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10,  1,  5,  7, 10]
-      when 10
+      when 6
         @arpeggio_intervals_candidate = [1,  5,  7, 10,  7,  5,  1,  5,  7, 10,  7,  5,  1,  5,  7, 10]
-      when 11
+      when 7
         @arpeggio_intervals_candidate = [1,  5, 10,  1,  5, 10,  1,  5, 10,  1,  5, 10,  1,  5, 10,  1]
-      when 12
+      when 8
         @arpeggio_intervals_candidate = [1,  5, 10,  5,  1,  5, 10,  5,  1,  5, 10,  5,  1,  5, 10,  5]
+      when 9
+        @arpeggio_intervals_candidate = [1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7,  1,  3,  5,  7]
+      when 10
+        @arpeggio_intervals_candidate = [1,  3,  5,  7,  5,  3,  1,  3,  5,  7,  5,  3,  1,  3,  5,  7]
+      when 11
+        @arpeggio_intervals_candidate = [1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1,  3,  5,  1]
+      when 12
+        @arpeggio_intervals_candidate = [1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3,  1,  3,  5,  3]
       when 13
         @arpeggio_intervals_candidate = [1,  4,  7, 10,  1,  4,  7, 10,  1,  4,  7, 10,  1,  4,  7, 10]
       when 14
@@ -258,9 +266,9 @@ class PRMC1Core
       end
 
       case (arpeggio_pattern - 1) % 16 + 1
-      when 1..4, 9..12
+      when 1..8
         @scale_is_pentatonic_candidate = false
-      when 5..8, 13..16
+      when 9..16
         @scale_is_pentatonic_candidate = true
       end
 
