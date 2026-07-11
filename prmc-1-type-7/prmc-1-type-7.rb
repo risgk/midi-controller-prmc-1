@@ -233,7 +233,7 @@ class PRMC1Core
     when 0..3
       @root_degrees_candidate[key] = ((value / 4) % 16) + 1
       @another_patterns_candidate[key] = ((value / 4) / 16 == 1) ? true : false
-      set_parameter_status((@root_degrees_candidate[key] - 1) % 7 + 1)
+      set_parameter_status_with_flag((@root_degrees_candidate[key] - 1) % 7 + 1, @another_patterns_candidate[key])
     when 4
       arpeggio_pattern = value / 4 + 1
 
@@ -414,6 +414,10 @@ class PRMC1Core
 
   def set_parameter_status(value)
     @parameter_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80].at(value)
+  end
+
+  def set_parameter_status_with_flag(value, flag)
+    @parameter_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40].at(value) + (flag ? 0x80 : 0x00)
   end
 
   def set_parameter_status_with_center_mark(value)
