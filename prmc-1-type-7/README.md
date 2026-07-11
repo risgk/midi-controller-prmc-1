@@ -28,30 +28,36 @@ Usage
     - Alternatively, 2 is used when the red button is pressed at the app startup
 - Send and receive Start/Stop: true
     - Alternatively, false is used when the blue button is pressed at the app startup
-- CH1 Knob: Root of Step 1 Chord, 1 - 16 degree (C3 - D5 in C Major Scale)
+- CH1 Knob: Root of Step 1 Chord, 1st - 16th degrees
+    - C3, D3, E3, F3, G3, A3, B3, C4, D4, E4, F4, G4, A4, B4, C5, D5 in C Major Scale
+    - C3, D3, E3, E3, G3, A3, C4, C4, D4, E4, E4, G4, A4, C5, C5, D5 in C Major Pentatonic Scale
 - CH2 Knob: Root of Step 2 Chord, Ditto
 - CH3 Knob: Root of Step 3 Chord, Ditto
 - CH4 Knob: Root of Step 4 Chord, Ditto
 - CH5 Knob: Arpeggio Pattern, 1 - 32
-    - Pattern 1, 17: Major Scale, Root + 3rd + 5th + 7th, Up
-    - Pattern 2, 18: Major Scale, Root + 3rd + 5th + 7th, Up & Down
-    - Pattern 3, 19: Major Scale, Root + 3rd + 5th, Up
-    - Pattern 4, 20: Major Scale, Root + 3rd + 5th, Up & Down
-    - Pattern 5, 21: Major Scale, Root + 5th + 7th + 10th, Up
-    - Pattern 6, 22: Major Scale, Root + 5th + 7th + 10th, Up & Down
-    - Pattern 7, 23: Major Scale, Root + 5th + 10th, Up
-    - Pattern 8, 24: Major Scale, Root + 5th + 10th, Up & Down
-    - Pattern 9, 25: Pentatonic Scale, Root + 3rd + 5th + 7th, Up
-    - Pattern 10, 26: Pentatonic Scale, Root + 3rd + 5th + 7th, Up & Down
-    - Pattern 11, 27: Pentatonic Scale, Root + 3rd + 5th, Up
-    - Pattern 12, 28: Pentatonic Scale, Root + 3rd + 5th, Up & Down
-    - Pattern 13, 29: Pentatonic Scale, Root + 4th + 7th + 10th, Up
-    - Pattern 14, 30: Pentatonic Scale, Root + 4th + 7th + 10th, Up & Down
-    - Pattern 15, 31: Pentatonic Scale, Root + 4th + 7th, Up
-    - Pattern 16, 32: Pentatonic Scale, Root + 4th + 7th, Up & Down
     - Pattern 1 - 16: 8th Note
     - Pattern 17 - 32: 16th Note
+    - Pattern 1 - 8, 17 - 24: Major Scale
+        - Pattern 1, 17: Root + 3rd + 5th + 7th scale degrees, Up
+        - Pattern 2, 18: Root + 3rd + 5th + 7th scale degrees, Up & Down
+        - Pattern 3, 19: Root + 3rd + 5th scale degrees, Up
+        - Pattern 4, 20: Root + 3rd + 5th scale degrees, Up & Down
+        - Pattern 5, 21: Root + 5th + 7th + 10th scale degrees, Up
+        - Pattern 6, 22: Root + 5th + 7th + 10th scale degrees, Up & Down
+        - Pattern 7, 23: Root + 5th + 10th scale degrees, Up
+        - Pattern 8, 24: Root + 5th + 10th scale degrees, Up & Down
+    - Pattern 9 - 16, 25 - 32: Major Pentatonic Scale
+        - Pattern 9, 25: Root + 3rd + 5th + 7th scale degrees, Up
+        - Pattern 10, 26: Root + 3rd + 5th + 7th scale degrees, Up & Down
+        - Pattern 11, 27: Root + 3rd + 5th scale degrees, Up
+        - Pattern 12, 28: Root + 3rd + 5th scale degrees, Up & Down
+        - Pattern 13, 29: Root + 4th + 7th + 10th scale degrees, Up
+        - Pattern 14, 30: Root + 4th + 7th + 10th scale degrees, Up & Down
+        - Pattern 15, 31: Root + 4th + 7th scale degrees, Up
+        - Pattern 16, 32: Root + 4th + 7th scale degrees, Up & Down
 - CH6 Knob: Diatonic Transpose, 1 - 8
+    - 1st, 2nd, 3rd, 4th, 5th, 6th, 7th, 8th scale degrees in Major Scale
+    - 1st, 2nd, 3rd, 3rd, 4th, 4th, 5th, 5th scale degrees in Major Pentatonic Scale
 - CH7 Knob: Brightness (Cutoff), 0 - 64 - 127 (-64 - +0 - +63)
 - CH8 Knob: BPM, 30 - 120 - 240
     - BPM setting is disabled when MIDI clock is received
