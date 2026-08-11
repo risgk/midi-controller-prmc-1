@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-7)
 ===============================
 
-**Version 0.1.0 (2026-07-11)**
+**Version 0.1.1 (2026-08-11)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -71,7 +71,7 @@ Usage
 - Byte Switch: Sub-Steps of On, 0 - 255
     - bit 7: Sub-Step 1 (and 9), ..., bit 0: Sub-Step 8 (and 16)
 
-[MIDI Implementation Chart](./MIDI-Implementation-Chart.md)
+[MIDI Implementation Chart](./MIDI_Implementation_Chart.md)
 ----------------------------------------------------------
 
 Known Issues
@@ -82,6 +82,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.1.1 (2026-08-11): Fix to use underscores in filenames
 - Version 0.1.0 (2026-07-11): Initial release
 
 License
