@@ -112,7 +112,7 @@ class M5UnitByteSwitch
   end
 end
 
-class MIDI
+class Midi
   # refs https://github.com/FortySevenEffects/arduino_midi_library
   def initialize(uart:)
     @uart = uart
@@ -152,7 +152,7 @@ class MIDI
   end
 end
 
-class PRMC1Core
+class Prmc1Core
   NUMBER_OF_STEPS = 4
   CLOCKS_PER_STEP = 96
 
@@ -436,7 +436,7 @@ angle8 = M5UnitAngle8.new(i2c: i2c1)
 dual_button = M5UnitDualButton.new(gpio_blue_button: 18, gpio_red_button: 19)
 byte_switch = M5UnitByteSwitch.new(i2c: i2c1)
 uart1 = UART.new(unit: :RP2040_UART1, txd_pin: 4, rxd_pin: 5, baudrate: 31_250)
-midi = MIDI.new(uart: uart1)
+midi = Midi.new(uart: uart1)
 current_inputs = [nil, nil, nil, nil, nil, nil, nil, nil, 0, 0, 0, 0]
 current_inputs[9] = dual_button.get_blue_button_input
 current_inputs[10] = dual_button.get_red_button_input
@@ -444,7 +444,7 @@ midi_channel = MIDI_CHANNEL
 midi_channel = MIDI_CHANNEL_ALT if current_inputs[10] == 1
 send_recv_start_stop = SEND_RECV_START_STOP
 send_recv_start_stop = !send_recv_start_stop if current_inputs[9] == 1
-prmc_1_core = PRMC1Core.new(midi: midi, midi_channel: midi_channel, send_recv_start_stop: send_recv_start_stop)
+prmc1_core = Prmc1Core.new(midi: midi, midi_channel: midi_channel, send_recv_start_stop: send_recv_start_stop)
 
 current_program = 0
 
@@ -473,41 +473,41 @@ loop do
   red_button_input = 0
 
   [6, 0, 1, 2, 3, 4, 5, 6, 7].each do |ch|
-    prmc_1_core.process_sequencer
+    prmc1_core.process_sequencer
     angle8.prepare_to_get_analog_input(ch)
-    prmc_1_core.process_sequencer
+    prmc1_core.process_sequencer
     analog_input = angle8.get_analog_input
 
     if current_inputs[ch].nil? ||
        analog_input > current_inputs[ch] + 1 ||
        analog_input < current_inputs[ch] - 1
       current_inputs[ch] = analog_input
-      prmc_1_core.change_parameter(ch, 127 - current_inputs[ch] / 2)
+      prmc1_core.change_parameter(ch, 127 - current_inputs[ch] / 2)
     end
   end
 
-  prmc_1_core.process_sequencer
+  prmc1_core.process_sequencer
   angle8.prepare_to_get_digital_input
-  prmc_1_core.process_sequencer
+  prmc1_core.process_sequencer
   digital_input = angle8.get_digital_input
 
   if current_inputs[8] != digital_input
     current_inputs[8] = digital_input
-    prmc_1_core.change_parameter(8, current_inputs[8])
+    prmc1_core.change_parameter(8, current_inputs[8])
   end
 
   blue_button_input = dual_button.get_blue_button_input
 
   if current_inputs[9] != blue_button_input
     current_inputs[9] = blue_button_input
-    prmc_1_core.change_parameter(9, current_inputs[9])
+    prmc1_core.change_parameter(9, current_inputs[9])
   end
 
   red_button_input = dual_button.get_red_button_input
 
   if current_inputs[10] != red_button_input
     current_inputs[10] = red_button_input
-    prmc_1_core.change_parameter(10, current_inputs[10])
+    prmc1_core.change_parameter(10, current_inputs[10])
 
     if red_button_input == 1 && blue_button_input == 1
       current_program = (current_program + 1) & 0x07
@@ -515,27 +515,27 @@ loop do
     end
   end
 
-  prmc_1_core.process_sequencer
+  prmc1_core.process_sequencer
   byte_switch.prepare_to_get_switch_status
-  prmc_1_core.process_sequencer
+  prmc1_core.process_sequencer
   switch_status = ~byte_switch.get_switch_status
 
   if current_inputs[11] != switch_status
     current_inputs[11] = switch_status
-    prmc_1_core.change_parameter(11, current_inputs[11])
+    prmc1_core.change_parameter(11, current_inputs[11])
   end
 
   # workaround for CH1 blue LED flickering issue
-  prmc_1_core.process_sequencer
+  prmc1_core.process_sequencer
   angle8.set_blue_led(7, 0)
 
   (0..3).each do |ch|
-    prmc_1_core.process_sequencer
-    angle8.set_blue_led(ch, (prmc_1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
+    prmc1_core.process_sequencer
+    angle8.set_blue_led(ch, (prmc1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 
   (0..7).each do |ch|
-    prmc_1_core.process_sequencer
-    angle8.set_green_led(ch, (prmc_1_core.parameter_status_bits >> ch & 0x01) * LED_ON_VALUE)
+    prmc1_core.process_sequencer
+    angle8.set_green_led(ch, (prmc1_core.parameter_status_bits >> ch & 0x01) * LED_ON_VALUE)
   end
 end
