@@ -1,15 +1,14 @@
 MIDI Controller PRMC-1 (type-6)
 ===============================
 
-**Version 0.3.1 (2026-07-10)**
+**Version 0.4.0 (2026-08-16)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
 Required Software
 -----------------
 
-- R2P2 PICORUBY 3.4.2 PICO2_W https://github.com/picoruby/picoruby/releases/3.4.2
-- R2P2 Web Terminal https://picoruby.org/terminal
+- R2P2 PICO2_W 0.5.0 https://github.com/picoruby/R2P2/releases/tag/0.5.0
 
 Required Hardware
 -----------------
@@ -74,6 +73,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.4.0 (2026-08-16): Change to use R2P2 PICO2_W 0.5.0
 - Version 0.3.1 (2026-07-10): Fix MIDI Implementation Chart
 - Version 0.3.0 (2026-07-10): Change the BPM range to 30 - 240; reverse the Sub-Steps bits
 - Version 0.2.1 (2026-06-28): Fix README
