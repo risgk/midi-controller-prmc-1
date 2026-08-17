@@ -1,14 +1,15 @@
-MIDI Controller PRMC-1 (type-7)
+MIDI Controller PRMC-1 (type-8)
 ===============================
 
-**Version 0.3.1 (2026-08-17)**
+**Version 0.1.0 (2026-08-17)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
 Required Software
 -----------------
 
-- R2P2 PICO2_W 0.5.0 https://github.com/picoruby/R2P2/releases/tag/0.5.0
+- R2P2 PICORUBY 4.0.3 PICO2_W https://github.com/picoruby/picoruby/releases/tag/4.0.3
+- R2P2 Web Terminal https://picoruby.org/terminal
 
 Required Hardware
 -----------------
@@ -81,15 +82,10 @@ Known Issues
 Change History
 --------------
 
-- Version 0.3.0 (2026-08-17): Fix NoMethodError by adding nil check
-- Version 0.3.0 (2026-08-16): Change GATE_TIME to 3
-- Version 0.2.0 (2026-08-16): Change to use R2P2 PICO2_W 0.5.0
-- Version 0.1.2 (2026-08-12): Improve code style
-- Version 0.1.1 (2026-08-11): Fix to use underscores in filenames
-- Version 0.1.0 (2026-07-11): Initial release
+- Version 0.1.0 (2026-08-17): Initial release
 
 License
 -------
 
-MIDI Controller PRMC-1 (type-7) by ISGK Instruments (Ryo Ishigaki) is marked with CC0 1.0.
+MIDI Controller PRMC-1 (type-8) by ISGK Instruments (Ryo Ishigaki) is marked with CC0 1.0.
 To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/

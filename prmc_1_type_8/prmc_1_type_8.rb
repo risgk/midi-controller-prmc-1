@@ -31,7 +31,7 @@ class M5UnitAngle8
   end
 
   def get_analog_input
-    @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
+    @i2c.read(ANGLE8_I2C_ADDR, 1).getbyte(0)
   rescue IOError => e
     p e
     retry
@@ -45,7 +45,7 @@ class M5UnitAngle8
   end
 
   def get_digital_input
-    @i2c.read(ANGLE8_I2C_ADDR, 1).bytes[0]
+    @i2c.read(ANGLE8_I2C_ADDR, 1).getbyte(0)
   rescue IOError => e
     p e
     retry
@@ -105,7 +105,7 @@ class M5UnitByteSwitch
   end
 
   def get_switch_status
-    @i2c.read(BYTE_SWITCH_I2C_ADDR, 1).bytes[0]
+    @i2c.read(BYTE_SWITCH_I2C_ADDR, 1).getbyte(0)
   rescue IOError => e
     p e
     retry
@@ -147,8 +147,7 @@ class Midi
   end
 
   def receive_byte
-    c = @uart.read(1)
-    c.ord if c
+    @uart.read(1)&.getbyte(0)
   end
 end
 
@@ -404,7 +403,7 @@ class Prmc1Core
 
     if @clock % (CLOCKS_PER_STEP / @step_division) ==
        CLOCKS_PER_STEP * GATE_TIME / 6 / @step_division % (CLOCKS_PER_STEP / @step_division)
-      @midi.send_note_off(playing_note_old, NOTE_OFF_VELOCITY, @midi_channel) if !@playing_note.nil?
+      @midi.send_note_off(playing_note_old, NOTE_OFF_VELOCITY, @midi_channel) if !@playing_note.nil? 
     end
   end
 
