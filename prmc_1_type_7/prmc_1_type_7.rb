@@ -398,7 +398,7 @@ class Prmc1Core
       diatonic_transpose = [1, 2, 3, 3, 4, 5, 6, 6].at(diatonic_transpose - 1) if @scale_is_pentatonic
       @playing_note = scale_notes[root + interval - 1 + diatonic_transpose - 1] + @transpose if
                       !root.nil? && !interval.nil? && ((1 << (sub_step % 8)) & @sub_steps_of_on_bits) > 0
-      @playing_note = 127 if @playing_note > 127
+      @playing_note = 127 if !@playing_note.nil? && @playing_note > 127
       @midi.send_note_on(@playing_note, NOTE_ON_VELOCITY, @midi_channel) if !@playing_note.nil?
     end
 
