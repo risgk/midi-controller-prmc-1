@@ -3,7 +3,7 @@ MIDI Controller PRMC-1
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
-https://github.com/risgk/midi-controller-prmc-1
+https://github.com/risgk/midi_controller_prmc1
 
 PRMC-1 (type-0)
 ---------------
@@ -12,7 +12,7 @@ PRMC-1 (type-0)
 - Required Software: R2P2 0.3.0
 - Required Hardware: Raspberry Pi Pico, Grove Shield for Pi Pico, M5Stack Unit 8Angle, and M5Stack Unit MIDI
 
-![PRMC-1 (type-0)](./midi-controller-prmc-1-type-0.jpg)
+![PRMC-1 (type-0)](./midi_controller_prmc1_type0.jpg)
 
 PRMC-1 (type-1)
 ---------------
@@ -33,7 +33,7 @@ PRMC-1 (type-3)
 - Required Software: R2P2 PICO2_W 0.5.0
 - Required Hardware: Raspberry Pi Pico 2, Grove Shield for Pi Pico, M5Stack Unit 8Angle, M5Stack Unit Dual Button, and M5Stack Unit MIDI
 
-![PRMC-1 (type-0)](./midi-controller-prmc-1-type-3.jpg)
+![PRMC-1 (type-0)](./midi_controller_prmc1_type3.jpg)
 
 PRMC-1 (type-4)
 ---------------
@@ -54,7 +54,7 @@ PRMC-1 (type-6)
 - Required Software: R2P2 PICO2_W 0.5.0
 - Required Hardware: Raspberry Pi Pico 2, Grove Shield for Pi Pico, M5Stack Unit 8Angle, M5Stack Unit ByteSwitch, M5Stack Unit Dual Button, and M5Stack Unit MIDI
 
-![PRMC-1 (type-0)](./midi-controller-prmc-1-type-6.jpg)
+![PRMC-1 (type-0)](./midi_controller_prmc1_type6.jpg)
 
 PRMC-1 (type-7)
 ---------------
