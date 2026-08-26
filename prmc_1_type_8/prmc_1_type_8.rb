@@ -92,6 +92,7 @@ class M5UnitByteSwitch
   # refs https://github.com/m5stack/M5Unit-ByteButton/tree/main/examples/unit-byteSwitch
   BYTE_SWITCH_I2C_ADDR = 0x46
   UNIT_BYTE_STATUS_REG = 0x00
+  UNIT_BYTE_RGB233_REG = 0x50
 
   def initialize(i2c:)
     @i2c = i2c
@@ -106,6 +107,13 @@ class M5UnitByteSwitch
 
   def get_switch_status
     @i2c.read(BYTE_SWITCH_I2C_ADDR, 1).getbyte(0)
+  rescue IOError => e
+    p e
+    retry
+  end
+
+  def set_led(ch, value)
+    @i2c.write(BYTE_SWITCH_I2C_ADDR, UNIT_BYTE_RGB233_REG + 7 - ch, (value > 0) ? 0x80 : 0x00)
   rescue IOError => e
     p e
     retry
@@ -195,6 +203,7 @@ class Prmc1Core
     @usec = Time.now.usec
     @usec_remain = 0
     @step_status_bits = 0x0
+    @sub_step_status_bits = 0x0
     @parameter_status_bits = 0x0
     @diatonic_transpose_candidate = 1
     @diatonic_transpose = @diatonic_transpose_candidate
@@ -334,6 +343,7 @@ class Prmc1Core
         @playing = false
         @midi.send_note_off(@playing_note, NOTE_OFF_VELOCITY, @midi_channel) if !@playing_note.nil?
         set_step_status(0)
+        set_sub_step_status(0)
       end
     when 9
       @transpose_candidate -= 1 if @transpose_candidate > -24 && value == 1
@@ -345,13 +355,17 @@ class Prmc1Core
       reversed_value = ((value & 0xF0) >> 4) | ((value & 0x0F) << 4)
       reversed_value = ((reversed_value & 0xCC) >> 2) | ((reversed_value & 0x33) << 2)
       reversed_value = ((reversed_value & 0xAA) >> 1) | ((reversed_value & 0x55) << 1)
-      @sub_steps_of_on_bits_candidate = ~reversed_value & 0xFF
+      @sub_steps_of_on_bits_candidate = reversed_value & 0xFF
       @parameter_status_bits = @sub_steps_of_on_bits_candidate
     end
   end
 
   def step_status_bits
     @step_status_bits
+  end
+
+  def sub_step_status_bits
+    @sub_step_status_bits
   end
 
   def parameter_status_bits
@@ -387,6 +401,7 @@ class Prmc1Core
       root = @root_degrees[@step]
       root = [1, 2, 3, 3, 4, 5, 6, 6, 7, 8, 8, 9, 10, 11, 11, 12].at(root - 1) if @scale_is_pentatonic
       sub_step = @clock / (CLOCKS_PER_STEP / @step_division)
+      set_sub_step_status((sub_step & 0x07) + 1)
       arpeggio_intervals = @arpeggio_intervals
       arpeggio_intervals = @alternative_arpeggio_intervals if @alternative_patterns[@step]
       interval = arpeggio_intervals[sub_step % arpeggio_intervals.length]
@@ -409,6 +424,10 @@ class Prmc1Core
 
   def set_step_status(value)
     @step_status_bits = [0x0, 0x1, 0x2, 0x4, 0x8].at(value)
+  end
+
+  def set_sub_step_status(value)
+    @sub_step_status_bits = [0x00, 0x01, 0x02, 0x04, 0x08, 0x10, 0x20, 0x40, 0x80].at(value)
   end
 
   def set_parameter_status(value)
@@ -517,7 +536,7 @@ loop do
   prmc1_core.process_sequencer
   byte_switch.prepare_to_get_switch_status
   prmc1_core.process_sequencer
-  switch_status = ~byte_switch.get_switch_status
+  switch_status = byte_switch.get_switch_status
 
   if current_inputs[11] != switch_status
     current_inputs[11] = switch_status
@@ -531,6 +550,11 @@ loop do
   (0..3).each do |ch|
     prmc1_core.process_sequencer
     angle8.set_blue_led(ch, (prmc1_core.step_status_bits >> ch & 0x01) * LED_ON_VALUE)
+  end
+
+  (0..7).each do |ch|
+    prmc1_core.process_sequencer
+    byte_switch.set_led(ch, prmc1_core.sub_step_status_bits >> ch & 0x01)
   end
 
   (0..7).each do |ch|
