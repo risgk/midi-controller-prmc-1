@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1 (type-8)
 ===============================
 
-**Version 0.1.0 (2026-08-17)**
+**Version 0.2.0 (2026-08-26)**
 
 MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
@@ -82,6 +82,7 @@ Known Issues
 Change History
 --------------
 
+- Version 0.2.0 (2026-08-26): Display current Sub-Step on Byte Switch LEDs
 - Version 0.1.0 (2026-08-17): Initial release
 
 License
