@@ -3,7 +3,7 @@ MIDI Controller PRMC-1 (type-8)
 
 **Version 0.2.0 (2026-08-26)**
 
-MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
+MIDI Controller made with PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
 Required Software
 -----------------
