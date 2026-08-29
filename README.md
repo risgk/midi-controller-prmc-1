@@ -1,7 +1,7 @@
 MIDI Controller PRMC-1
 ======================
 
-MIDI Controller using PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
+MIDI Controller made with PicoRuby/R2P2 by ISGK Instruments (Ryo Ishigaki)
 
 https://github.com/risgk/midi_controller_prmc1
 
